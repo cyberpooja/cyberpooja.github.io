@@ -3,6 +3,7 @@
 import {useEffect, useReducer, useRef, useState} from 'react';
 import Link from 'next/link';
 import AboutContent from '@/components/AboutContent';
+import {site, socialProfiles} from '@/lib/site';
 import {ArrowLeft, ArrowUpRight, BatteryFull, BookOpen, Camera, Check, Code2, ExternalLink, Fingerprint, Github, Globe, Grip, Home, Linkedin, LockKeyholeOpen, Mail, Mic, Search, Smartphone, Terminal, TrendingUp, UserRound, Wifi, X} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import {usePortfolioAccess} from '@/components/PortfolioAccess';
@@ -80,8 +81,8 @@ export default function Workspace({articles}:{articles:ArticlePreview[]}){
           <button onClick={()=>openApp('writing')} aria-label="Browse writing" title="Browse writing" className="dock-browser"><Globe size={26}/></button>
           <Link href="/" aria-label="Return to the terminal challenge" title="Terminal" className="dock-terminal"><Terminal size={24}/></Link>
           <button onClick={()=>openApp('projects')} aria-label="Explore projects" title="Projects" className="dock-code"><Code2 size={25}/></button>
-          <button onClick={()=>openApp('connect')} aria-label="GitHub and contact profiles" title="GitHub"><Github size={27}/></button>
-          <Link href="/contact/" aria-label="Contact Pooja Pawar" title="Contact" className="dock-linkedin"><Linkedin size={24}/></Link>
+          <button onClick={()=>openApp('connect')} aria-label="Social profiles and contact" title="Connect"><Mail size={27}/></button>
+          <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Pooja Pawar on LinkedIn (opens in a new tab)" title="LinkedIn" className="dock-linkedin"><Linkedin size={24}/></a>
         </nav>
         <button className="workspace-home-indicator" aria-label="Tablet home" onClick={closeApp}/>
       </div>
@@ -97,7 +98,7 @@ export default function Workspace({articles}:{articles:ArticlePreview[]}){
       {panel==='journey'&&<><p className="dialog-lead">A workspace built around three habits.</p><p className="workspace-small-note">Career dates, achievements, and conference appearances have not been added yet. These are research principles, not a professional timeline.</p><div className="journey-list"><section><span>01 / LEARN</span><h3>Ask better questions.</h3><p>Understand the platform, challenge assumptions, and keep a notebook of what is still unclear.</p></section><section><span>02 / BUILD</span><h3>Make ideas testable.</h3><p>Small experiments help connect a theory to application behavior.</p></section><section><span>03 / SHARE</span><h3>Leave useful field notes.</h3><p>Write down the steps, the evidence, and the limitations so someone else can learn too.</p></section></div><Link className="workspace-modal-link" href="/speaking/">Talks & workshops <ArrowUpRight size={15}/></Link></>}
       {panel==='personal'&&<><p className="dialog-lead">A quiet desk, a mountain view, and room for the next idea. Choose the atmosphere for this workspace.</p><div className="wallpaper-options">{[['night','Nightfall','Cool, quiet, and focused.'],['warm','Lamplight','A little warmth for late-night reading.']].map(([value,name,desc])=><button key={value} aria-pressed={mood===value} onClick={()=>setMood(value)} className={mood===value?'active':''}><span className={`mood-preview preview-${value}`}/><strong>{name} {mood===value?'✓':''}</strong><span>{desc}</span></button>)}</div><p className="workspace-small-note">Stay curious. Take a break. Come back with a better question.</p></>}
       {panel==='apps'&&<nav className="workspace-apps modal-apps" aria-label="All portfolio apps">{apps.map(appItem)}</nav>}
-      {panel==='connect'&&<><p className="dialog-lead">For collaboration, research conversations, and thoughtful questions.</p><p className="workspace-small-note">Personal GitHub and LinkedIn profile links haven’t been added yet.</p><Link className="workspace-modal-link" href="/contact/"><Mail size={16}/> Open contact details <ArrowUpRight size={15}/></Link></>}
+      {panel==='connect'&&<><p className="dialog-lead">For collaboration, research conversations, and thoughtful questions.</p><div className="workspace-content-list">{socialProfiles.map(profile=><a key={profile.name} href={profile.url} target="_blank" rel="noopener noreferrer" aria-label={`${profile.name} (opens in a new tab)`}><h3>{profile.name}</h3><p>{profile.description}</p><ExternalLink size={15}/></a>)}</div><Link className="workspace-modal-link" href="/contact/"><Mail size={16}/> Open contact details <ArrowUpRight size={15}/></Link></>}
       </div>
     </dialog>
   </main>;
