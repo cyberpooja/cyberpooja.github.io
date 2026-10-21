@@ -40,7 +40,7 @@ MDX supports Markdown, fenced code blocks with syntax highlighting, GFM tables, 
 1. `frida -U -f com.lab.vault -l root-bypass.js`
 2. `frida -U -f com.lab.vault -l ssl-bypass.js`
 
-Flags may be reordered. Unknown flags, incorrect targets, wrong-stage scripts and appended shell instructions are rejected. Hints populate the input. Success shows hooks and transitions to `/portfolio/`; Skip and navigation links work at any time. Nothing executes on a real device. `/blog/`, `/blog/<slug>/` and every portfolio route are independent of challenge state. Reloading the entrance resets the lab.
+Flags may be reordered. Unknown flags, incorrect targets, wrong-stage scripts and appended shell instructions are rejected. The emulator displays a typewritten security alert (with skip and reduced-motion support). Hints can be copied or inserted. Built-in commands: `help`, `status`, `history`, and `clear`. Up/Down recall submitted commands and preserve the current draft. Timed Frida and logcat-style output reports each hook; inputs lock during attachment to prevent duplicate transitions. Success shows hooks and transitions to `/portfolio/`; Skip and navigation links work at any time. Nothing executes on a real device. `/blog/`, `/blog/<slug>/` and every portfolio route are independent of challenge state. Reloading the entrance resets the lab.
 
 ## Personalize before public launch
 

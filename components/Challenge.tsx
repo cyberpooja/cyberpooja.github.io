@@ -1,9 +1,142 @@
 'use client';
-import {useState,useRef,useEffect} from 'react';
+
+import {useEffect, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import {ArrowRight,ArrowUpRight,ShieldAlert,ShieldCheck,Terminal,Wifi,BatteryFull,LockKeyhole,Check,ChevronRight,RotateCcw} from 'lucide-react';
-import {commands,validateCommand} from '@/lib/challenge.mjs';
-export default function Challenge(){const [stage,setStage]=useState(0),[input,setInput]=useState(''),[hint,setHint]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState<string[]>([]),[tilt,setTilt]=useState({x:0,y:0});const router=useRouter();const field=useRef<HTMLInputElement>(null);const timer=useRef<ReturnType<typeof setTimeout>|null>(null);useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current)},[]);
-function run(e:React.FormEvent){e.preventDefault();if(stage===2)return;if(!validateCommand(input,stage)){setError('Command not recognized. Use the bundled script shown in the hint.');setHistory(h=>[...h.slice(-3),`$ ${input}`, '[!] No hook attached. Check target and script.']);return;}setHistory(h=>[...h.slice(-3),`$ ${input}`,stage===0?'[+] RootCheck.isRooted() → false':'[+] CertificatePinner.check() → trusted']);setStage(stage+1);setInput('');setError('');setHint(false);if(stage===1)timer.current=setTimeout(()=>router.push('/portfolio/?unlocked=1'),2200);}
-return <section className="lab-section"><div className="hero-copy"><div className="eyebrow"><span className="dot"/> MOBILE APPLICATION SECURITY</div><h1>Trust nothing.<br/>Understand<br/><span>everything.</span></h1><p className="intro">I’m Puja. I explore what happens beneath the surface of mobile applications—and write about what I find.</p><div className="hero-actions"><button className="primary" onClick={()=>field.current?.focus()}>Enter the lab <ArrowRight size={17}/></button><Link className="text-link" href="/blog/">Read the research <ArrowUpRight size={16}/></Link></div><div className="specialties"><span>Android security</span><span>Reverse engineering</span><span>Frida</span></div><div className="lab-note"><Terminal size={18}/><p>A small challenge before we begin.<br/><span>Two checks. A few hooks. Your way in.</span></p></div></div><div className="lab-visual"><div className="lab-topline"><span><span className="dot"/> INTERACTIVE SANDBOX</span><span>LAB_001</span></div><div className="phone-stage" onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();setTilt({x:(e.clientY-r.top-r.height/2)/40,y:(e.clientX-r.left-r.width/2)/35})}} onPointerLeave={()=>setTilt({x:0,y:0})}><div className="orbit orbit-one"/><div className="orbit orbit-two"/><span className="device-tag">PIXEL 8 · ANDROID 14</span><div className={'phone '+(stage===2?'phone-success':'')} style={{transform:`rotateX(${6-tilt.x}deg) rotateY(${-13+tilt.y}deg) rotateZ(4deg)`}}><div className="phone-side"/><div className="screen"><div className="statusbar"><span>9:41</span><i/><div><Wifi size={12}/><BatteryFull size={15}/></div></div><div className="appbar"><div className="app-icon"><LockKeyhole size={15}/></div><span>Vault<span className="tiny muted">com.lab.vault</span></span><span className="app-menu">⋮</span></div><div className="phone-content"><span className="tiny muted">DEVICE INTEGRITY CHECK</span><div className={'shield '+(stage===2?'green':'')}>{stage===2?<ShieldCheck size={43} strokeWidth={1.3}/>:<ShieldAlert size={43} strokeWidth={1.3}/>}</div><span className="phone-pill">{stage===2?'ASSESSMENT COMPLETE':'SECURITY ALERT'}</span><h2>{stage===0?'Rooted device\ndetected':stage===1?'Certificate\npinning failed':'Access\ngranted'}</h2><p>{stage===0?'This device does not meet our security requirements.':stage===1?'The server certificate could not be verified.':'Hooks attached. Welcome to the other side.'}</p><div className="denied">{stage===2?<Check size={12}/>:<LockKeyhole size={12}/>} {stage===2?'Connection established':'Access denied'}</div><div className="phone-checks"><div><span>Root detection</span><span className={stage>0?'success':'amber'}>{stage>0?'BYPASSED':'DETECTED'}</span></div><div><span>SSL pinning</span><span className={stage===2?'success':'muted'}>{stage===0?'PENDING':stage===1?'FAILED':'BYPASSED'}</span></div></div></div><div className="android-bar"/></div></div><div className="floating-label"><span className="dot"/> {stage===2?'hooks attached':'frida-server connected'}</div></div><div className="terminal"><div className="terminal-head"><span><Terminal size={14}/> frida console</span><span className="terminal-dots">● ● ●</span><span className="tiny">USB · emulator-5554</span></div><div className="terminal-body" aria-live="polite"><p><span className="muted">[system]</span> Attached to <span className="cream">com.lab.vault</span></p><p><span className="amber">[{stage===2?'success':'challenge'}]</span> {stage===0?'Bypass root detection to continue.':stage===1?'Root bypassed. Disable SSL pinning.':'Both checks bypassed. Opening portfolio…'}</p>{history.map((line,i)=><p className="log" key={i}>{line}</p>)}<form onSubmit={run}><label htmlFor="command">❯</label><input ref={field} id="command" aria-label="Frida command" autoComplete="off" spellCheck={false} value={input} onChange={e=>setInput(e.target.value)} placeholder="Enter a Frida command…" disabled={stage===2}/><button aria-label="Run command" disabled={stage===2}><ArrowRight size={16}/></button></form>{error&&<p className="error" role="alert">{error}</p>}{hint&&stage<2&&<div className="hint"><p>Load the bundled {stage===0?'RootCheck':'CertificatePinner'} hook:</p><code>{commands[stage]}</code><button onClick={()=>{setInput(commands[stage]);field.current?.focus()}}>Use command <ChevronRight size={12}/></button></div>}</div><div className="terminal-foot"><span><b>{Math.min(stage+1,2).toString().padStart(2,'0')}</b> / 02 checks</span><button onClick={()=>setHint(!hint)} disabled={stage===2}>{hint?'Hide hint':'Need a hint?'}</button></div></div><div className="lab-bottom"><span>Browser simulation. No device required.</span><Link href="/portfolio/">Skip challenge <ArrowRight size={12}/></Link></div></div></section>}
+import {ArrowRight, BatteryFull, Check, Copy, Terminal, Wifi} from 'lucide-react';
+import {commands, validateCommand} from '@/lib/challenge.mjs';
+
+const startup = `[!] SECURITY ALERT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DEVICE INTEGRITY CHECK: FAILED
+
+[✗] Root Access Detected
+[✗] SSL Certificate Pinning Enabled
+[✗] Untrusted Environment Detected
+
+PORTFOLIO ACCESS: DENIED 🔒
+
+Welcome to a security researcher's
+environment.
+
+Want to know who's behind this device?
+
+Prove your Android pentesting skills.
+
+> STEP 01: Bypass Root Detection
+> STEP 02: Bypass SSL Pinning
+
+Use Frida commands in the terminal below
+to bypass both security checks.
+
+Two bypasses. One portfolio.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ SYSTEM AWAITING YOUR EXPLOIT ]`;
+
+type Line = {text:string; tone?:'error'|'ok'|'command'|'muted'};
+export default function Challenge() {
+  const router = useRouter();
+  const [stage, setStage] = useState(0);
+  const [typed, setTyped] = useState(0);
+  const [input, setInput] = useState('');
+  const [logs, setLogs] = useState<Line[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [showBoot, setShowBoot] = useState(true);
+  const [copied, setCopied] = useState<number|null>(null);
+  const [copyError, setCopyError] = useState('');
+  const [tilt, setTilt] = useState({x:0,y:0});
+  const field = useRef<HTMLInputElement>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const history = useRef<string[]>([]);
+  const historyIndex = useRef(0);
+  const draft = useRef('');
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const running = useRef(false);
+  const finished = typed >= startup.length;
+  function later(fn:()=>void, delay:number) { timers.current.push(setTimeout(fn,delay)); }
+  function append(line:Line) { setLogs(l=>[...l.slice(-149),line]); }
+
+  useEffect(()=>{
+    if(finished)return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){setTyped(startup.length);return;}
+    const timer=setInterval(()=>setTyped(n=>Math.min(startup.length,n+8)),18);
+    return ()=>clearInterval(timer);
+  },[finished]);
+  useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
+  useEffect(()=>{if(viewport.current)viewport.current.scrollTop=viewport.current.scrollHeight;},[typed,logs]);
+  useEffect(()=>{if(finished&&!busy&&stage<2)field.current?.focus({preventScroll:true});},[finished,busy,stage]);
+
+  async function copy(index:number) {
+    try { await navigator.clipboard.writeText(commands[index]);setCopied(index);setCopyError('');later(()=>setCopied(null),1800); }
+    catch { setCopyError('Clipboard unavailable. Select the command to copy, or choose Use command.'); }
+  }
+  function run(event:React.FormEvent) {
+    event.preventDefault();
+    if(running.current||stage===2||!finished||!input.trim())return;
+    const command=input.trim();
+    history.current.push(command);historyIndex.current=history.current.length;draft.current='';setInput('');
+    append({text:`android@emulator:~$ ${command}`,tone:'command'});
+    if(command==='clear'){setLogs([]);setShowBoot(false);return;}
+    if(command==='help'){
+      append({text:'Built-ins: help · clear · history · status',tone:'muted'});
+      append({text:'↑ / ↓ recall commands. Enter executes. All output is simulated.'});
+      commands.forEach((c,i)=>append({text:`STEP 0${i+1}: ${c}`}));return;
+    }
+    if(command==='history'){history.current.forEach((c,i)=>append({text:`${i+1}  ${c}`,tone:'muted'}));return;}
+    if(command==='status'){append({text:`Root detection: ${stage>0?'BYPASSED':'DETECTED'} | SSL pinning: ${stage===2?'BYPASSED':'ENABLED'}`,tone:stage>0?'ok':'error'});return;}
+    if(stage===1&&validateCommand(command,0)){append({text:'[✓] Root Detection Bypassed already. Continue with ssl-bypass.js.',tone:'ok'});return;}
+    if(stage===0&&validateCommand(command,1)){append({text:'[!] Root check blocks initialization. Complete STEP 01 first.',tone:'error'});return;}
+    if(!validateCommand(command,stage)){append({text:'[!] Command rejected. Type help or use a bundled Frida command. No system commands are executed.',tone:'error'});return;}
+    running.current=true;setBusy(true);
+    const root=stage===0;
+    const output:Line[]=[
+      {text:'[Frida / simulated] Connected to emulator-5554 over USB',tone:'muted'},
+      {text:"Spawning `com.lab.vault`… Resuming main thread.",tone:'muted'},
+      {text:`[+] Loaded ${root?'root-bypass.js':'ssl-bypass.js'}; Java.perform() ready`,tone:'ok'},
+      {text:root?'[hook] com.lab.vault.RootCheck.isRooted() → false':'[hook] okhttp3.CertificatePinner.check(String, List) → return',tone:'ok'},
+      {text:root?'I/Vault(4242): Device integrity gate passed':'I/OkHttp(4242): Lab TLS connection accepted',tone:'muted'},
+      {text:root?'[✓] Root Detection Bypassed':'[✓] SSL Pinning Bypassed',tone:'ok'},
+      {text:root?'E/Vault(4242): SSLPeerUnverifiedException: Certificate pinning failure!':'[✓] Both simulated checks bypassed. PORTFOLIO ACCESS: GRANTED',tone:root?'error':'ok'}
+    ];
+    output.forEach((line,i)=>later(()=>append(line),220+i*260));
+    later(()=>{setStage(root?1:2);setBusy(false);running.current=false;if(!root)later(()=>router.push('/portfolio/?unlocked=1'),2400);},220+output.length*260);
+  }
+
+  return <section className="terminal-landing" aria-label="Interactive Android security assessment">
+    <div className="emulator-caption"><span><span className="dot"/> ANDROID SECURITY LAB</span><span>01 / INTERACTIVE ASSESSMENT</span></div>
+    <div className="emulator-perspective" onPointerMove={e=>{if(e.pointerType!=='mouse')return;const r=e.currentTarget.getBoundingClientRect();setTilt({x:(e.clientY-r.top-r.height/2)/200,y:(e.clientX-r.left-r.width/2)/230});}} onPointerLeave={()=>setTilt({x:0,y:0})}>
+      <div className={`security-device ${stage===2?'device-unlocked':''}`} style={{transform:`rotateX(${-tilt.x}deg) rotateY(${tilt.y}deg)`}}>
+        <div className="device-camera"/>
+        <div className="device-status"><span>9:41</span><span>ANDROID 14 · EMULATOR-5554</span><div><Wifi size={13}/><BatteryFull size={17}/></div></div>
+        <div className="security-screen">
+          <div className="security-titlebar"><span><Terminal size={16}/> vault / security console</span><span className={stage===2?'security-green':'security-red'}>{stage===2?'UNLOCKED':'RESTRICTED'}</span></div>
+          <div className="security-workspace">
+            <div className="console-panel">
+              <div className="console-scroll" ref={viewport} tabIndex={0} aria-label="Terminal output">
+                {showBoot&&<div className="boot-output" aria-label={startup}><div aria-hidden="true">{startup.slice(0,typed).split('\n').map((line,i)=><div key={i} className={/SECURITY ALERT|FAILED|\[✗\]|DENIED/.test(line)?'security-red':line.startsWith('>')||line.includes('AWAITING')?'security-green':''}>{line||'\u00a0'}</div>)}{!finished&&<span className="terminal-cursor">▌</span>}</div></div>}
+                <div role="log" aria-live="polite" aria-relevant="additions">{logs.map((l,i)=><div className={`console-line tone-${l.tone||'default'}`} key={i}>{l.text}</div>)}</div>
+              </div>
+              {!finished?<button className="finish-boot" onClick={()=>setTyped(startup.length)}>Skip startup animation →</button>:<form className="security-prompt" onSubmit={run}>
+                <label htmlFor="android-command">android@emulator:~$</label><div className="prompt-entry"><input id="android-command" ref={field} aria-label="Android terminal command" aria-describedby="terminal-shortcuts" autoComplete="off" autoCapitalize="off" spellCheck={false} value={input} disabled={busy||stage===2} placeholder={busy?'Attaching hooks…':stage===2?'Access granted':'Type help to begin'} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{
+                  if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();
+                  if(historyIndex.current===history.current.length)draft.current=input;
+                  historyIndex.current=Math.max(0,Math.min(history.current.length,historyIndex.current+(e.key==='ArrowUp'?-1:1)));
+                  setInput(historyIndex.current===history.current.length?draft.current:history.current[historyIndex.current]);
+                }}/><button disabled={busy||stage===2||!input.trim()} aria-label="Execute command"><ArrowRight size={17}/></button></div>
+              </form>}
+              <div className="console-bottom" id="terminal-shortcuts"><span>{busy?'● HOOK IN PROGRESS':stage===2?'● SESSION VERIFIED':'● FRIDA SIMULATION READY'}</span><span>↑↓ history · Enter run</span></div>
+            </div>
+            <aside className="challenge-guide"><span className="eyebrow">THE WAY IN</span><h1>Two bypasses.<br/>One portfolio.</h1><p>Observe the checks. Attach your hooks. Meet the researcher.</p>
+              {commands.map((command,i)=><div className={`command-guide ${stage>i?'guide-complete':''}`} key={command}><div className="guide-step"><span>0{i+1} / {i===0?'ROOT DETECTION':'SSL PINNING'}</span>{stage>i?<Check size={15}/>:<span>{stage===i?'ACTIVE':'LOCKED'}</span>}</div><p>{stage>i?'Bypassed successfully.':i===0?'Override the device integrity check.':'Hook the certificate pinning check.'}</p><code>{command}</code><div className="guide-actions"><button onClick={()=>copy(i)}><Copy size={12}/>{copied===i?'Copied':'Copy'}</button><button disabled={!finished||busy||stage!==i} onClick={()=>{setInput(command);field.current?.focus();}}>Use command ↗</button></div></div>)}
+              {copyError&&<p role="status" className="security-red">{copyError}</p>}<p className="simulation-note">A symbolic browser-only lab. Bundled hooks and device responses are simulated.</p><Link href="/portfolio/" className="guide-skip">Skip to portfolio <ArrowRight size={13}/></Link>
+            </aside>
+          </div>
+          {stage===2&&<div className="access-overlay" role="status"><div className="unlock-symbol"><Check size={35}/></div><span>ASSESSMENT COMPLETE</span><h2>ACCESS GRANTED</h2><p>Both hooks attached. Welcome to the other side.</p><Link href="/portfolio/">Enter portfolio <ArrowRight size={16}/></Link></div>}
+        </div><div className="device-navigation"><span/></div>
+      </div>
+    </div>
+    <div className="emulator-caption bottom-caption"><span>NO DEVICE REQUIRED. JUST CURIOSITY.</span><Link href="/blog/">Read the field notes ↗</Link></div>
+  </section>;
+}
