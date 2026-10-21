@@ -3,7 +3,6 @@
 import {useEffect, useState} from 'react';
 import {usePathname} from 'next/navigation';
 import Header from '@/components/Header';
-import Challenge from '@/components/Challenge';
 import {AccessContext} from '@/components/PortfolioAccess';
 import {shouldShowPortfolio} from '@/lib/access.mjs';
 
@@ -21,10 +20,10 @@ export default function SiteShell({children}:{children:React.ReactNode}) {
   }
   // Articles remain independently accessible and indexable. The challenge is a
   // browser simulation, not authentication or a boundary for sensitive content.
-  const entrance = pathname==='/';
-  const locked = !shouldShowPortfolio(pathname,unlocked);
-  return <AccessContext.Provider value={{unlock}}>
-    {entrance ? children : locked ? <main id="main" className="entry-page"><Challenge/></main> : <>
+  const entrance = !shouldShowPortfolio(pathname);
+  const workspace = ['/portfolio','/portfolio/','/about','/about/'].includes(pathname);
+  return <AccessContext.Provider value={{unlocked,unlock}}>
+    {entrance||workspace ? children : <>
       <a className="skip-link" href="#main">Skip to content</a>
       <Header/>{children}
       <footer><a className="brand" href="/">puja<span className="muted">.sec</span></a><span>Built with curiosity. Tested with intent.</span><div><a href="/blog/">Writing</a><a href="/rss.xml">RSS ↗</a><span>© 2026</span></div></footer>
