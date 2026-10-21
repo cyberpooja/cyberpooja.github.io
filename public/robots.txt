@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://puja-mobile-security-lab.bonny-auk-0028.chatgpt.site/sitemap.xml
+Disallow: /write/
+Sitemap: https://cyberpooja.github.io/sitemap.xml

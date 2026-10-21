@@ -1,0 +1,71 @@
+media:
+  input: public/uploads
+  output: /uploads
+  rename: safe
+  extensions: [png, jpg, jpeg, webp, gif]
+content:
+  - name: posts
+    label: Blog & Research
+    type: collection
+    path: content/posts
+    format: yaml-frontmatter
+    subfolders: false
+    operations:
+      rename: false
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, draft, kind, date]
+      search: [title, description, category]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Short summary / SEO description
+        type: text
+        required: true
+      - name: kind
+        label: Where should this appear?
+        type: select
+        default: article
+        options:
+          values:
+            - { label: Blog article, value: article }
+            - { label: Research finding, value: research }
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: Category
+        type: string
+        default: Mobile security
+        required: true
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+        required: true
+      - name: cover
+        label: Cover image (optional)
+        type: image
+      - name: draft
+        label: Keep as draft (turn off to publish)
+        type: boolean
+        default: true
+      - name: body
+        label: Your story
+        type: rich-text
+        options:
+          format: markdown
+          switcher: true

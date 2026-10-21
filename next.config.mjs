@@ -1,7 +1,8 @@
+import {normalizeBasePath} from './lib/paths.mjs';
 export default (phase) => ({
   output: 'export',
   trailingSlash: true,
   images: { unoptimized: true },
-  // Keep local development and production builds from overwriting each other.
+  basePath: normalizeBasePath(process.env.NEXT_PUBLIC_BASE_PATH || ''),
   distDir: phase === 'phase-development-server' ? '.next-dev' : '.next',
 });

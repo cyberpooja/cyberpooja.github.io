@@ -1,3 +1,9 @@
+## Browser writing and GitHub hosting
+
+The portfolio now includes a **Write** entry at `/write/`, a Pages CMS visual-editor configuration, and an automated GitHub Pages workflow. The publishing target is `cyberpooja/cyberpooja.github.io`. One-time GitHub authorization and repository creation are still required before online publication works. See [the setup and daily writing guide](docs/GITHUB-PUBLISHING.md).
+
+After setup: open **Write → Pages CMS → Blog & Research**, write and save a draft, then turn **Keep as draft** off and save to publish. GitHub deploys the website automatically after the build succeeds. The editor runs in Pages CMS; the public site runs on GitHub Pages.
+
 # Puja / Mobile Security
 
 A Next.js + TypeScript portfolio with a simulated Android/Frida entrance and a static, MDX-powered technical publication. The phone uses CSS 3D transforms and pointer-responsive rotation to keep startup light and the UI accessible without a WebGL dependency.
@@ -31,7 +37,7 @@ Open http://localhost:3000. Run `npm test`, `npm run build`, and `npm run check`
 npm run post:new -- my-research-note
 ```
 
-Edit the generated `content/posts/my-research-note.mdx`, including its title, description, quoted ISO date, category and tags. Set `draft: false`, then rebuild and deploy. Edit existing MDX files to update articles; remove files to unpublish them. Drafts are excluded from routes, feeds and search. The filename is the permanent URL slug: changing it changes the URL. This is file-based publishing, not a hosted CMS/admin dashboard.
+Edit the generated `content/posts/my-research-note.mdx`, including its title, description, quoted ISO date, category and tags. Set `draft: false`, then rebuild and deploy. Edit existing MDX files to update articles; remove files to unpublish them. Drafts are excluded from routes, feeds and search. The filename is the permanent URL slug: changing it changes the URL. Manual file editing remains optional; the configured Pages CMS provides browser-based editing through GitHub.
 
 MDX supports Markdown, fenced code blocks with syntax highlighting, GFM tables, JSX, images (`![Description](/image.png)`) and code-block text diagrams. Put image files in `public/`. Only compile trusted author content: MDX is executable at build time. Rich SVG diagrams can be included as authored JSX; automatic Mermaid rendering is not bundled.
 

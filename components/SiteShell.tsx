@@ -2,6 +2,8 @@
 
 import {useEffect, useState} from 'react';
 import {usePathname} from 'next/navigation';
+import Link from 'next/link';
+import {assetPath} from '@/lib/urls';
 import Header from '@/components/Header';
 import {AccessContext} from '@/components/PortfolioAccess';
 import {shouldShowPortfolio} from '@/lib/access.mjs';
@@ -26,7 +28,7 @@ export default function SiteShell({children}:{children:React.ReactNode}) {
     {entrance||workspace ? children : <>
       <a className="skip-link" href="#main">Skip to content</a>
       <Header/>{children}
-      <footer><a className="brand" href="/">puja<span className="muted">.sec</span></a><span>Built with curiosity. Tested with intent.</span><div><a href="/blog/">Writing</a><a href="/rss.xml">RSS ↗</a><span>© 2026</span></div></footer>
+      <footer><Link className="brand" href="/portfolio/">puja<span className="muted">.sec</span></Link><span>Built with curiosity. Tested with intent.</span><div><Link href="/blog/">Writing</Link><a href={assetPath('/rss.xml')}>RSS ↗</a><span>© 2026</span></div></footer>
     </>}
   </AccessContext.Provider>;
 }
