@@ -16,3 +16,4 @@
 .entry-page .terminal-landing{width:100%;padding:28px 35px;max-width:1240px}
 .access-overlay button{display:flex;gap:15px;align-items:center;border:1px solid #486e51;background:#13251a;color:#b3ebc1;padding:12px 18px;margin-top:25px;font-size:12px}
 @media(max-width:700px){.entry-page{align-items:flex-start}.entry-page .terminal-landing{padding:14px 12px}}
+.visitor-steps{padding-left:18px;margin:16px 0 20px;color:#9fb3a2;font-size:11px;line-height:1.8}.visitor-steps li{padding-left:3px;margin-bottom:9px}.visitor-steps strong{color:#d4e5d5;font-weight:600}.challenge-guide h1{font-size:27px}.guide-actions button:last-child{padding:8px 10px;border:1px solid #41614a;border-radius:4px;background:#182b1d;color:#b7e4c0}.guide-actions{align-items:center}
