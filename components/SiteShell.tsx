@@ -1,0 +1,33 @@
+'use client';
+
+import {useEffect, useState} from 'react';
+import {usePathname} from 'next/navigation';
+import Header from '@/components/Header';
+import Challenge from '@/components/Challenge';
+import {AccessContext} from '@/components/PortfolioAccess';
+import {shouldShowPortfolio} from '@/lib/access.mjs';
+
+const sessionKey = 'puja-security-assessment-complete';
+
+export default function SiteShell({children}:{children:React.ReactNode}) {
+  const pathname = usePathname();
+  const [unlocked, setUnlocked] = useState(false);
+  useEffect(()=>{
+    try {setUnlocked(sessionStorage.getItem(sessionKey)==='true');} catch {/* In-memory access still works when storage is disabled. */}
+  },[]);
+  function unlock(){
+    setUnlocked(true);
+    try {sessionStorage.setItem(sessionKey,'true');} catch {/* Storage is optional for the simulated gate. */}
+  }
+  // Articles remain independently accessible and indexable. The challenge is a
+  // browser simulation, not authentication or a boundary for sensitive content.
+  const entrance = pathname==='/';
+  const locked = !shouldShowPortfolio(pathname,unlocked);
+  return <AccessContext.Provider value={{unlock}}>
+    {entrance ? children : locked ? <main id="main" className="entry-page"><Challenge/></main> : <>
+      <a className="skip-link" href="#main">Skip to content</a>
+      <Header/>{children}
+      <footer><a className="brand" href="/">puja<span className="muted">.sec</span></a><span>Built with curiosity. Tested with intent.</span><div><a href="/blog/">Writing</a><a href="/rss.xml">RSS ↗</a><span>© 2026</span></div></footer>
+    </>}
+  </AccessContext.Provider>;
+}

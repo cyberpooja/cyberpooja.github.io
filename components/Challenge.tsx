@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import Link from 'next/link';
+import {usePortfolioAccess} from '@/components/PortfolioAccess';
 import {ArrowRight, BatteryFull, Check, Copy, Terminal, Wifi} from 'lucide-react';
 import {commands, validateCommand} from '@/lib/challenge.mjs';
 
@@ -38,6 +38,8 @@ Two bypasses. One portfolio.
 type Line = {text:string; tone?:'error'|'ok'|'command'|'muted'};
 export default function Challenge() {
   const router = useRouter();
+  const {unlock} = usePortfolioAccess();
+  function enterPortfolio(){unlock();router.replace('/portfolio/');}
   const [stage, setStage] = useState(0);
   const [typed, setTyped] = useState(0);
   const [input, setInput] = useState('');
@@ -101,11 +103,10 @@ export default function Challenge() {
       {text:root?'E/Vault(4242): SSLPeerUnverifiedException: Certificate pinning failure!':'[✓] Both simulated checks bypassed. PORTFOLIO ACCESS: GRANTED',tone:root?'error':'ok'}
     ];
     output.forEach((line,i)=>later(()=>append(line),220+i*260));
-    later(()=>{setStage(root?1:2);setBusy(false);running.current=false;if(!root)later(()=>router.push('/portfolio/?unlocked=1'),2400);},220+output.length*260);
+    later(()=>{setStage(root?1:2);setBusy(false);running.current=false;if(!root)later(enterPortfolio,2400);},220+output.length*260);
   }
 
   return <section className="terminal-landing" aria-label="Interactive Android security assessment">
-    <div className="emulator-caption"><span><span className="dot"/> ANDROID SECURITY LAB</span><span>01 / INTERACTIVE ASSESSMENT</span></div>
     <div className="emulator-perspective" onPointerMove={e=>{if(e.pointerType!=='mouse')return;const r=e.currentTarget.getBoundingClientRect();setTilt({x:(e.clientY-r.top-r.height/2)/200,y:(e.clientX-r.left-r.width/2)/230});}} onPointerLeave={()=>setTilt({x:0,y:0})}>
       <div className={`security-device ${stage===2?'device-unlocked':''}`} style={{transform:`rotateX(${-tilt.x}deg) rotateY(${tilt.y}deg)`}}>
         <div className="device-camera"/>
@@ -130,13 +131,12 @@ export default function Challenge() {
             </div>
             <aside className="challenge-guide"><span className="eyebrow">THE WAY IN</span><h1>Two bypasses.<br/>One portfolio.</h1><p>Observe the checks. Attach your hooks. Meet the researcher.</p>
               {commands.map((command,i)=><div className={`command-guide ${stage>i?'guide-complete':''}`} key={command}><div className="guide-step"><span>0{i+1} / {i===0?'ROOT DETECTION':'SSL PINNING'}</span>{stage>i?<Check size={15}/>:<span>{stage===i?'ACTIVE':'LOCKED'}</span>}</div><p>{stage>i?'Bypassed successfully.':i===0?'Override the device integrity check.':'Hook the certificate pinning check.'}</p><code>{command}</code><div className="guide-actions"><button onClick={()=>copy(i)}><Copy size={12}/>{copied===i?'Copied':'Copy'}</button><button disabled={!finished||busy||stage!==i} onClick={()=>{setInput(command);field.current?.focus();}}>Use command ↗</button></div></div>)}
-              {copyError&&<p role="status" className="security-red">{copyError}</p>}<p className="simulation-note">A symbolic browser-only lab. Bundled hooks and device responses are simulated.</p><Link href="/portfolio/" className="guide-skip">Skip to portfolio <ArrowRight size={13}/></Link>
+              {copyError&&<p role="status" className="security-red">{copyError}</p>}<p className="simulation-note">A symbolic browser-only lab. Bundled hooks and device responses are simulated.</p>
             </aside>
           </div>
-          {stage===2&&<div className="access-overlay" role="status"><div className="unlock-symbol"><Check size={35}/></div><span>ASSESSMENT COMPLETE</span><h2>ACCESS GRANTED</h2><p>Both hooks attached. Welcome to the other side.</p><Link href="/portfolio/">Enter portfolio <ArrowRight size={16}/></Link></div>}
+          {stage===2&&<div className="access-overlay" role="status"><div className="unlock-symbol"><Check size={35}/></div><span>ASSESSMENT COMPLETE</span><h2>ACCESS GRANTED</h2><p>Both hooks attached. Welcome to the other side.</p><button onClick={enterPortfolio}>Enter portfolio <ArrowRight size={16}/></button></div>}
         </div><div className="device-navigation"><span/></div>
       </div>
     </div>
-    <div className="emulator-caption bottom-caption"><span>NO DEVICE REQUIRED. JUST CURIOSITY.</span><Link href="/blog/">Read the field notes ↗</Link></div>
   </section>;
 }
