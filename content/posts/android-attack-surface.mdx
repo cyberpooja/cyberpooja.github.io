@@ -1,0 +1,47 @@
+---
+title: "From APK to attack surface"
+description: "A repeatable starting point for turning an unfamiliar Android app into a useful security map."
+date: "2026-10-02"
+category: "Reverse engineering"
+tags: ["Android", "Reverse engineering", "Web & API"]
+---
+> Sample research workflow for an application you own or are authorized to test.
+
+## Start with a map
+
+A large collection of tool output is not yet an assessment. The first goal is to identify inputs, trust boundaries, and sensitive operations. A small map can make later testing more deliberate.
+
+## Inventory entry points
+
+Review the application manifest for exported activities, services, receivers, and providers. Record required permissions and look at how the application consumes data passed into each entry point.
+
+```text
+Entry point → Untrusted input → Transformation → Sensitive operation
+Deep link   → URI parameters  → Account lookup → Profile view
+Provider    → Record selector → Query builder  → Local database
+API call    → Object ID       → Authorization  → User record
+```
+
+An exported component is not automatically a vulnerability. Its intended role, protection, and downstream behavior determine the risk.
+
+## Connect static and dynamic evidence
+
+Static inspection suggests what might happen. Runtime observation shows what happens for a particular execution. Use both: follow a deep link through its parsing code, then test a small set of meaningful values in the lab and compare the result with your expectation.
+
+## Keep a reproducible notebook
+
+```markdown
+# Observation
+Build: lab-2026.10
+Entry point: profile deep link
+Expected: only the active account's data is shown
+Observed: document the actual result here
+Evidence: request trace, screenshots, relevant code path
+Next test: repeat with a second authorized test account
+```
+
+Avoid recording access tokens or personal data in published notes. Use synthetic test accounts and redact evidence before sharing it.
+
+## Prioritize the trust boundary
+
+Spend time where data moves from a less trusted context into a more sensitive action. Follow the same object identifier from the UI to the API and ask where ownership is enforced. A concise finding with a clear root cause is more useful than a long list of suspicious strings.

@@ -1,0 +1,1 @@
+export default function NotFound(){return <main id="main" className="section page"><span className="eyebrow">404 / OUT OF SCOPE</span><h1>This route is uncharted.</h1><p className="page-lead">The page may have moved, or the address may be incorrect.</p><a href="/blog/" className="primary">Back to field notes →</a></main>}

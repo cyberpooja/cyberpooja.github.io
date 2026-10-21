@@ -1,0 +1,49 @@
+---
+title: "A closer look at certificate pinning"
+description: "What pinning protects, where it lives, and how to reason about it in a mobile assessment."
+date: "2026-10-08"
+category: "Transport security"
+tags: ["Android", "Frida", "Web & API"]
+---
+> Sample lab walkthrough. All targets and observations are illustrative.
+
+## Two different questions
+
+TLS certificate validation checks that a server certificate is acceptable for the intended hostname under the configured trust policy. Pinning adds an application-specific constraint, such as requiring a particular public key.
+
+When a test proxy presents its own certificate, a device may trust the proxy’s certificate authority while the application still rejects the connection because its pin does not match.
+
+## Follow the connection
+
+```text
+Android application
+        |
+        v
+Certificate chain + hostname checks
+        |
+        v
+Application pinning policy
+        |
+        v
+Encrypted API connection
+```
+
+The order and implementation depend on the networking library. Native libraries and custom trust managers can introduce additional paths, so avoid assuming a single hook covers every request.
+
+## The portfolio laboratory
+
+The fictional Vault application performs a root check before making its first network request. After the first simulated hook, the interface advances to a pinning error. This is a teaching sequence, not a claim that every application behaves this way.
+
+```bash
+frida -U -f com.lab.vault -l ssl-bypass.js
+```
+
+The simulator accepts the command and records a successful hook. It does not implement TLS interception or connect to a device.
+
+## Test with evidence
+
+In an authorized assessment, compare a baseline request with an observed request after instrumentation. Record which library handles the connection, which validation method is reached, and whether traffic can actually be observed at the test proxy. An absence of errors is weaker evidence than seeing the expected request.
+
+## Keep the boundaries separate
+
+Pinning reduces exposure to some interception scenarios. It does not replace session management, object-level authorization, or careful handling of sensitive data. Review these controls separately and avoid interpreting readable traffic as permission to access other users’ records.

@@ -1,0 +1,59 @@
+---
+title: "Root detection is a signal, not a boundary"
+description: "Following an Android integrity check from its Java implementation to a runtime hook."
+date: "2026-10-14"
+category: "Android security"
+tags: ["Android", "Frida", "Reverse engineering"]
+---
+> Sample educational field note. The package and classes below belong to a fictional, authorized lab application.
+
+## What are we actually trusting?
+
+A root check answers a narrow question: does this environment resemble a modified device? It does not prove the identity of the person using the application, and it does not establish permission to access a server resource.
+
+That distinction matters. A client can be inspected and modified by the person controlling its runtime. Detection can increase the effort required to tamper with an application, but sensitive decisions still need server-side enforcement.
+
+## Trace the decision first
+
+Begin with the user-visible denial and trace the value that drives it. In our fictional Vault application, the decision reaches a small Java method:
+
+```java
+public boolean isRooted() {
+    return hasTestKeys() || hasSuBinary();
+}
+```
+
+Before changing behavior, record when the method runs, which caller consumes its result, and whether the same logic is repeated elsewhere. A successful UI transition does not prove that every protection has been bypassed.
+
+## A deliberately small laboratory hook
+
+For this test application, the hook replaces a zero-argument Boolean method. Real applications may use overloads, native code, multiple class loaders, or integrity checks at different points in their lifecycle.
+
+```javascript
+Java.perform(function () {
+  const RootCheck = Java.use('com.lab.vault.RootCheck');
+  RootCheck.isRooted.implementation = function () {
+    console.log('[lab] isRooted() called');
+    return false;
+  };
+});
+```
+
+Load the script against the lab target:
+
+```bash
+frida -U -f com.lab.vault -l root-bypass.js
+```
+
+This command is accepted by the portfolio’s simulator. On a real test device, attaching requires a compatible instrumentation setup and an application you are authorized to assess. The browser experience does not run this script.
+
+## What to capture
+
+- The original result and visible application behavior.
+- The replacement result and the exact hook used.
+- Whether protected API operations still require authorization.
+- Any checks that occur outside the Java method being tested.
+
+## The useful finding
+
+The finding is not simply “root detection can be bypassed.” It is whether the application makes a security decision that depends on trusting that local result. Treat device integrity as one risk signal, use layered controls, and keep authorization on the server.

@@ -1,0 +1,7 @@
+Puja — Mobile Security Researcher
+PORTFOLIO STARTER — replace this file with your real resume.
+
+Focus: Android security, reverse engineering, runtime instrumentation.
+Experience: Add verified professional experience.
+Research: Add published work and responsible disclosures.
+Contact: Replace hello@example.com in lib/site.ts.
