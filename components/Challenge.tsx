@@ -127,11 +127,11 @@ export default function Challenge() {
                   setInput(historyIndex.current===history.current.length?draft.current:history.current[historyIndex.current]);
                 }}/><button disabled={busy||stage===2||!input.trim()} aria-label="Execute command"><ArrowRight size={17}/></button></div>
               </form>}
-              <div className="console-bottom" id="terminal-shortcuts"><span>{busy?'● HOOK IN PROGRESS':stage===2?'● SESSION VERIFIED':'● FRIDA SIMULATION READY'}</span><span>↑↓ history · Enter run</span></div>
+              <div className="console-bottom" id="terminal-shortcuts"><span>{busy?'● HOOK IN PROGRESS':stage===2?'● SESSION VERIFIED':''}</span><span>↑↓ history · Enter run</span></div>
             </div>
             <aside className="challenge-guide"><span className="eyebrow">THE WAY IN</span><h1>Two bypasses.<br/>One portfolio.</h1><p>Observe the checks. Attach your hooks. Meet the researcher.</p>
               {commands.map((command,i)=><div className={`command-guide ${stage>i?'guide-complete':''}`} key={command}><div className="guide-step"><span>0{i+1} / {i===0?'ROOT DETECTION':'SSL PINNING'}</span>{stage>i?<Check size={15}/>:<span>{stage===i?'ACTIVE':'LOCKED'}</span>}</div><p>{stage>i?'Bypassed successfully.':i===0?'Override the device integrity check.':'Hook the certificate pinning check.'}</p><code>{command}</code><div className="guide-actions"><button onClick={()=>copy(i)}><Copy size={12}/>{copied===i?'Copied':'Copy'}</button><button disabled={!finished||busy||stage!==i} onClick={()=>{setInput(command);field.current?.focus();}}>Use command ↗</button></div></div>)}
-              {copyError&&<p role="status" className="security-red">{copyError}</p>}<p className="simulation-note">A symbolic browser-only lab. Bundled hooks and device responses are simulated.</p>
+              {copyError&&<p role="status" className="security-red">{copyError}</p>}
             </aside>
           </div>
           {stage===2&&<div className="access-overlay" role="status"><div className="unlock-symbol"><Check size={35}/></div><span>ASSESSMENT COMPLETE</span><h2>ACCESS GRANTED</h2><p>Both hooks attached. Welcome to the other side.</p><button onClick={enterPortfolio}>Enter portfolio <ArrowRight size={16}/></button></div>}
