@@ -1,8 +1,8 @@
-## Browser writing and GitHub hosting
+# Browser writing and publishing
 
-The portfolio now includes a **Write** entry at `/write/`, a Pages CMS visual-editor configuration, and an automated GitHub Pages workflow. The publishing target is `cyberpooja/cyberpooja.github.io`. One-time GitHub authorization and repository creation are still required before online publication works. See [the setup and daily writing guide](docs/GITHUB-PUBLISHING.md).
+The portfolio now has an integrated rich-text editor at **`/write/`**: titles/subtitles, selection formatting, headings, lists, tables, highlighted code blocks, image uploads, local autosaved drafts, preview, story management and GitHub publishing. The normal writing flow stays on your website.
 
-After setup: open **Write → Pages CMS → Blog & Research**, write and save a draft, then turn **Keep as draft** off and save to publish. GitHub deploys the website automatically after the build succeeds. The editor runs in Pages CMS; the public site runs on GitHub Pages.
+See [the writing studio guide](docs/WRITING-STUDIO.md) for daily use, private draft backups and connecting a GitHub publishing token. See [GitHub hosting](docs/GITHUB-PUBLISHING.md) for the public site deployment.
 
 # Puja / Mobile Security
 

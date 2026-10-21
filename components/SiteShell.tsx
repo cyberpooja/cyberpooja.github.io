@@ -23,7 +23,7 @@ export default function SiteShell({children}:{children:React.ReactNode}) {
   // Articles remain independently accessible and indexable. The challenge is a
   // browser simulation, not authentication or a boundary for sensitive content.
   const entrance = !shouldShowPortfolio(pathname);
-  const workspace = ['/portfolio','/portfolio/','/about','/about/'].includes(pathname);
+  const workspace = ['/portfolio','/portfolio/','/about','/about/','/write','/write/'].includes(pathname);
   return <AccessContext.Provider value={{unlocked,unlock}}>
     {entrance||workspace ? children : <>
       <a className="skip-link" href="#main">Skip to content</a>
