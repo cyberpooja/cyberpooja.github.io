@@ -1,5 +1,6 @@
 ---
 import '../styles/writer.css';
+import Brand from '../components/Brand.astro';
 ---
 <!doctype html>
 <html lang="en">
@@ -11,7 +12,7 @@ import '../styles/writer.css';
 </head>
 <body data-pagefind-ignore>
   <header class="writer-header">
-    <div class="brand-group"><a class="brand" href="/">puja.sec</a><span class="draft-label">Draft</span><span id="save-status" role="status">Opening drafts…</span></div>
+    <div class="brand-group"><Brand /><span class="draft-label">Draft</span><span id="save-status" role="status">Opening drafts…</span></div>
     <nav aria-label="Writing actions">
       <button id="stories-button">My stories</button><button id="preview-button">Preview</button>
       <button id="publish-button" class="primary">Publish</button>

@@ -1,0 +1,19 @@
+---
+import { SITE } from '../site.config';
+import { withBase } from '../utils/paths';
+---
+<a class="site-wordmark" href={withBase('/')} aria-label={`${SITE.title} home`}>{SITE.title}</a>
+<style>
+  .site-wordmark {
+    display: inline-block;
+    flex-shrink: 0;
+    color: inherit;
+    font: 700 34px Georgia, serif;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .site-wordmark { font-size: 28px; }
+  }
+</style>
