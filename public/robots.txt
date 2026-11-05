@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /write/
-Sitemap: https://cyberpooja.github.io/sitemap.xml
