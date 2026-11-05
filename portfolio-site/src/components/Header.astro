@@ -1,7 +1,6 @@
 ---
 import { withBase } from '../utils/paths';
-import { NAV_LINKS } from '../site.config';
-import Brand from './Brand.astro';
+import { SITE, NAV_LINKS } from '../site.config';
 import ThemeToggle from './ThemeToggle.astro';
 
 const currentPath = Astro.url.pathname;
@@ -14,7 +13,13 @@ function isActive(href: string) {
 <header class="sticky top-0 z-50 border-b border-stone-200/80 bg-stone-50/90 backdrop-blur dark:border-stone-800/80 dark:bg-stone-950/90">
   <div class="h-[3px] bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600"></div>
   <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-    <Brand />
+    <a href={withBase('/')} class="group flex items-center gap-2 text-lg font-extrabold tracking-tight text-stone-900 dark:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="h-6 w-6 text-accent-600 transition group-hover:rotate-90 dark:text-accent-400">
+        <path d="M4 4h5M4 4v5M20 4h-5M20 4v5M4 20h5M4 20v-5M20 20h-5M20 20v-5" />
+        <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none" />
+      </svg>
+      {SITE.title}
+    </a>
 
     <nav class="hidden items-center gap-5 text-sm md:flex">
       {NAV_LINKS.map((link) => (
