@@ -7,7 +7,7 @@ export const SITE = {
   tagline: 'Independent security research, vulnerability analysis & tooling',
   description:
     'A personal cybersecurity research publication covering vulnerability research, CVE analysis, reverse engineering, and open-source security tooling.',
-  url: 'https://cyberpooja.github.io/portfolio/',
+  url: 'https://cyberpooja.github.io/',
   author: {
     name: 'Pooja',
     bio: 'Security researcher focused on Android, web/API, and AI security. I publish original vulnerability research, root-cause analysis, and open-source tooling.',

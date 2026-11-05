@@ -18,7 +18,7 @@ backend:
   base_url: https://your-oauth-worker.example.workers.dev
 
 media_folder: "portfolio-site/public/uploads"
-public_folder: "/portfolio/uploads"
+public_folder: "/uploads"
 
 collections:
   - name: research

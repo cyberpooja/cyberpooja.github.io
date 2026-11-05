@@ -6,11 +6,11 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { remarkMermaid } from './src/plugins/remark-mermaid.mjs';
 
-// NOTE: update `site` to your real GitHub Pages / custom domain URL before deploying.
+// GitHub Pages user site.
 // This affects sitemap.xml, rss.xml, and canonical/OG tags.
 export default defineConfig({
   site: 'https://cyberpooja.github.io',
-  base: '/portfolio',
+  base: '/',
   vite: {
     plugins: [tailwindcss()],
   },
