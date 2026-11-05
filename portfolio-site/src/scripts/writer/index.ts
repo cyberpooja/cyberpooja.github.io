@@ -155,8 +155,9 @@ $('publish-button').onclick = async () => {
 };
 $('publish-form').onsubmit = async event => {
   event.preventDefault(); if(busy) return; if(!github){connectDialog();return;}
-  fieldsToStory(); if(!(await persist())) return;
-  if(!title.value.trim() || editor.isEmpty){$('publish-error').textContent='Add a title and a story first.';return;}
+  busy=true;
+  fieldsToStory(); if(!(await persist())) {busy=false;return;}
+  if(!title.value.trim() || editor.isEmpty){$('publish-error').textContent='Add a title and a story first.';busy=false;return;}
   busy=true; editor.setEditable(false); title.disabled=true; for (const field of $('publish-form').querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input,select,textarea')) field.disabled=true; $('publish-error').textContent='';
   const button=$<HTMLButtonElement>('confirm-publish'); button.disabled=true; button.textContent='Publishing…';
   const snapshot: Story=structuredClone(story);
