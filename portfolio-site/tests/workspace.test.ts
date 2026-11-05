@@ -1,0 +1,32 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { Window } from 'happy-dom';
+import { indexedDB, IDBKeyRange } from 'fake-indexeddb';
+import { createStore, values } from 'idb-keyval';
+const wait=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms));
+test('writing starts without login, autosaves a title, switches preview, and creates another draft',async()=>{
+  const window=new Window({url:'https://writer.test',settings:{disableJavaScriptEvaluation:true}});
+  for(const key of ['window','document','navigator','Node','HTMLElement','Element','MutationObserver','DOMParser','getComputedStyle','localStorage','FileReader','requestAnimationFrame','cancelAnimationFrame'])
+    Object.defineProperty(globalThis,key,{value:typeof (window as any)[key]==='function' && ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'].includes(key)?(window as any)[key].bind(window):(window as any)[key]??window,writable:true,configurable:true});
+  Object.assign(globalThis,{indexedDB,IDBKeyRange});
+  const html=readFileSync(new URL('../src/pages/write.astro',import.meta.url),'utf8').replace(/^---[\s\S]*?---/,'').replace(/<script[\s\S]*?<\/script>/g,'');
+  window.document.write(html);
+  await import('../src/scripts/writer/index.ts');
+  await wait(450);
+  const title=window.document.getElementById('story-title') as any;
+  assert.ok(window.document.querySelector('[contenteditable=true]'));
+  title.value='My saved story';title.dispatchEvent(new window.Event('input'));
+  await wait(450);
+  const store=createStore('puja-writing','stories');
+  const drafts=await values<any>(store);assert.equal(drafts.length,1);assert.equal(drafts[0].title,'My saved story');
+  assert.equal(window.document.getElementById('save-status')!.textContent,'Saved on this device');
+  window.document.getElementById('preview-button')!.dispatchEvent(new window.MouseEvent('click'));assert.equal(title.readOnly,true);
+  window.document.getElementById('preview-button')!.dispatchEvent(new window.MouseEvent('click'));assert.equal(title.readOnly,false);
+  window.document.getElementById('new-button')!.dispatchEvent(new window.MouseEvent('click'));await wait(450);
+  assert.equal(title.value,'');assert.equal((await values<any>(store)).length,2);
+  window.document.getElementById('publish-button')!.dispatchEvent(new window.MouseEvent('click'));await wait(50);
+  assert.equal((window.document.getElementById('publish-dialog') as any).open,true);
+  assert.match(window.document.getElementById('connection-status')!.textContent!,/Connect GitHub/);
+  await window.happyDOM.close();
+});

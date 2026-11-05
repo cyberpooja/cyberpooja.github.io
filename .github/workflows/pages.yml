@@ -22,6 +22,14 @@ jobs:
       - name: Install dependencies
         working-directory: portfolio-site
         run: npm ci
+      - name: Test writing workspace
+        working-directory: portfolio-site
+        run: npm test
+      - name: Check types
+        working-directory: portfolio-site
+        run: npm run astro -- check
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
       - name: Build site
         working-directory: portfolio-site
         run: npm run build

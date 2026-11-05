@@ -16,12 +16,12 @@ npm run dev -- --background
 
 ## Writing and publishing
 
-Select **Write** on the website or open https://cyberpooja.github.io/write/.
-The visual editor supports blog posts, research articles, and tools/projects with rich text, images, preview, saved drafts, and publishing.
+Open https://cyberpooja.github.io/write/ to start writing immediately.
 
-For first-time sign-in, follow https://cyberpooja.github.io/writing-help/.
-Use a fine-grained GitHub token scoped to this repository with Contents and Pull requests read/write access. Enter it only in the editor, never in repository files.
+The focused editor offers a title and story canvas, selection formatting, an insert menu, image paste/drop, preview, and automatic local draft saving. My stories lists browser drafts and can load published entries after GitHub sign-in. Download draft backups from the more menu to keep copies outside this browser.
 
-Drafts are saved on workflow branches and are not deployed until published. This repository is public, so saved drafts are not confidential. Publishing merges the entry to main and triggers Pages automatically.
+Publishing opens a separate dialog for the section, summary, category, and tags. Connect a GitHub token with Contents read/write access to this repository when ready to publish. Tokens stay in memory only. Publishing commits Markdown and images and starts GitHub Pages deployment.
 
-For the technical configuration, see `portfolio-site/CMS-SETUP.md`.
+See https://cyberpooja.github.io/writing-help/ for instructions, or `portfolio-site/CMS-SETUP.md` for implementation details.
+
+Run `npm test`, `npm run astro -- check`, and `npm run build` from `portfolio-site/` to validate changes.

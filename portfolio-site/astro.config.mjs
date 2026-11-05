@@ -14,7 +14,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/writing-help/') })],
+  integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/writing-help/') && !page.includes('/write/') })],
   markdown: {
     remarkPlugins: [remarkMermaid],
     shikiConfig: {

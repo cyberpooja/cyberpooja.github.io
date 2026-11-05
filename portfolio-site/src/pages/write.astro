@@ -1,0 +1,79 @@
+---
+import '../styles/writer.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" /><title>Write · puja.sec</title>
+  <link rel="icon" href="/favicon.svg" />
+  <script is:inline>document.documentElement.dataset.theme = localStorage.getItem('writer-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');</script>
+</head>
+<body data-pagefind-ignore>
+  <header class="writer-header">
+    <div class="brand-group"><a class="brand" href="/">puja.sec</a><span class="draft-label">Draft</span><span id="save-status" role="status">Opening drafts…</span></div>
+    <nav aria-label="Writing actions">
+      <button id="stories-button">My stories</button><button id="preview-button">Preview</button>
+      <button id="publish-button" class="primary">Publish</button>
+      <button id="more-button" class="icon-button" aria-label="More options" aria-expanded="false">•••</button>
+    </nav>
+    <div id="more-menu" class="popover" hidden>
+      <button id="new-button">New story</button><button id="export-button">Download draft backup</button>
+      <button id="import-button">Restore draft backup</button><button id="theme-button">Switch appearance</button>
+      <button id="connect-button">Connect GitHub</button><button id="disconnect-button" hidden>Disconnect GitHub</button>
+      <a href="/writing-help/" target="_blank" rel="noopener">Writing help ↗</a>
+    </div>
+  </header>
+  <main class="writing-page" id="writing-page">
+    <textarea id="story-title" rows="1" disabled aria-label="Story title" placeholder="Title" spellcheck="true"></textarea>
+    <div class="story-area">
+      <button id="insert-button" class="insert-button" aria-label="Insert a block" aria-expanded="false">+</button>
+      <div id="insert-menu" class="insert-menu" hidden>
+        <button data-command="image">Image</button><button data-command="h2">Heading</button>
+        <button data-command="codeBlock">Code</button><button data-command="quote">Quote</button>
+        <button data-command="bulletList">List</button><button data-command="divider">Divider</button>
+      </div>
+      <div id="editor"></div>
+    </div>
+    <footer class="writing-footer"><span id="word-count">0 words</span><span>Drafts stay in this browser · <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>S</kbd> to save</span></footer>
+  </main>
+  <div id="bubble-menu" class="bubble-menu" style="visibility:hidden" role="toolbar" aria-label="Format selected text">
+    <button data-command="bold" aria-label="Bold"><b>B</b></button><button data-command="italic" aria-label="Italic"><i>I</i></button>
+    <button data-command="h2" aria-label="Heading">H2</button><button data-command="h3" aria-label="Subheading">H3</button>
+    <button data-command="quote" aria-label="Quote">❞</button><button data-command="link" aria-label="Link">↗</button>
+    <button data-command="code" aria-label="Inline code">&lt;/&gt;</button>
+  </div>
+  <p id="notice" role="status" hidden></p>
+  <dialog id="publish-dialog"><form id="publish-form">
+    <div class="dialog-header"><h2>Ready to publish?</h2><button type="button" data-close aria-label="Close">×</button></div>
+    <p class="muted">A few finishing touches before your story goes live.</p>
+    <label>Publish in<select id="section"><option value="blog">Blog</option><option value="research">Security Research</option><option value="tools">Tools & Projects</option></select></label>
+    <label>Short summary<textarea id="description" rows="3" required maxlength="500" placeholder="What will readers take away?"></textarea></label>
+    <div class="field-row"><label>Category<input id="category" required maxlength="100" list="categories" /></label><label>Tags<input id="tags" placeholder="Android, Security" /></label></div>
+    <datalist id="categories"><option>Web Security</option><option>Android Security</option><option>API Security</option><option>AI Security</option><option>Tutorials</option><option>Security Automation</option></datalist>
+    <label id="repo-field" hidden>Project repository<input id="repo-url" type="url" placeholder="https://github.com/…" /></label>
+    <p class="muted" id="connection-status">Connect GitHub to publish. You can keep writing without signing in.</p>
+    <p id="publish-error" class="error" role="alert"></p>
+    <div class="dialog-actions"><button type="button" id="publish-connect">Connect GitHub</button><button id="confirm-publish" class="primary" type="submit">Publish story</button></div>
+    <div id="published-result" hidden><p>Saved to GitHub. Your site updates when deployment finishes.</p><a id="deployment-link" target="_blank" rel="noopener">View deployment ↗</a> · <a id="story-link" target="_blank" rel="noopener">View story ↗</a></div>
+  </form></dialog>
+  <dialog id="connect-dialog"><form id="connect-form">
+    <div class="dialog-header"><h2>Connect your account</h2><button type="button" data-close aria-label="Close">×</button></div>
+    <p>Use a GitHub token with <strong>Contents: Read and write</strong> access to <strong>cyberpooja.github.io</strong>.</p>
+    <label>Access token<input id="access-token" type="password" autocomplete="off" required /></label>
+    <p class="muted">Your token is used only to contact GitHub. It stays in memory and is cleared when you reload or disconnect.</p>
+    <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a token on GitHub ↗</a>
+    <p id="connect-error" class="error" role="alert"></p><div class="dialog-actions"><button class="primary" type="submit">Connect</button></div>
+  </form></dialog>
+  <dialog id="stories-dialog" class="stories-dialog">
+    <div class="dialog-header"><h2>Your stories</h2><button data-close aria-label="Close">×</button></div>
+    <div class="stories-tabs"><button id="local-tab" class="active">On this browser</button><button id="published-tab">Published</button><button id="new-story" class="primary">New story</button></div>
+    <p id="stories-note" class="muted">Drafts are saved on this device. Download a backup to keep a copy elsewhere.</p><div id="stories-list"></div>
+  </dialog>
+  <dialog id="link-dialog"><form id="link-form"><div class="dialog-header"><h2>Add a link</h2><button type="button" data-close aria-label="Close">×</button></div><label>URL<input id="link-url" type="url" placeholder="https://…" /></label><div class="dialog-actions"><button type="button" id="unlink-button">Remove link</button><button type="submit" class="primary">Apply</button></div></form></dialog>
+  <dialog id="image-dialog"><form id="image-form"><div class="dialog-header"><h2>Add an image</h2><button type="button" data-close aria-label="Close">×</button></div><label>Image file<input id="image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required /></label><label>Description for accessibility<input id="image-alt" required placeholder="Describe the image" /></label><p class="muted">Up to 5 MB. Uploads to your site when you publish.</p><p id="image-error" class="error"></p><div class="dialog-actions"><button type="submit" class="primary">Insert image</button></div></form></dialog>
+  <input id="import-file" type="file" accept="application/json,.json" hidden />
+  <noscript>Enable JavaScript to write stories.</noscript>
+  <script src="../scripts/writer/index.ts"></script>
+</body>
+</html>

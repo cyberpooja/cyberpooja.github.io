@@ -1,31 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { withBase } from '../utils/paths';
 ---
 <Layout title="Writing guide" noindex>
   <div class="mx-auto max-w-3xl px-4 py-14 sm:px-6" data-pagefind-ignore>
     <p class="index-label mb-2">Your writing workspace</p>
-    <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Write. Preview. Publish.</h1>
-    <p class="mt-4 text-stone-600 dark:text-stone-400">Create blog posts, research articles, and tool or project pages entirely in the visual editor.</p>
-    <a href={withBase('/write/')} class="mt-6 inline-block rounded-full bg-accent-600 px-5 py-2.5 font-semibold text-white hover:bg-accent-700">Open the editor →</a>
-    <section class="mt-10 rounded-xl border border-stone-200 p-6 dark:border-stone-800">
-      <h2 class="text-xl font-semibold">First-time sign-in</h2>
-      <p class="mt-3">Only people with access to your repository can save or publish.</p>
-      <ol class="mt-4 list-decimal space-y-3 pl-5 text-stone-600 dark:text-stone-400">
-        <li>Open <a class="text-accent-600 underline dark:text-accent-400" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub’s token settings</a> and create a fine-grained token.</li>
-        <li>Choose your <strong>cyberpooja.github.io</strong> repository. Allow <strong>Contents</strong> and <strong>Pull requests</strong> to read and write.</li>
-        <li>In the editor, select <strong>Sign In with Token</strong> and paste it there. Keep the token private. Sign-in is remembered in this browser until it expires or you sign out.</li>
-      </ol>
+    <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Just start writing.</h1>
+    <p class="mt-4 text-stone-600 dark:text-stone-400">A blank page for your ideas. Give your story a title, then start typing. No sign-in is needed to write.</p>
+    <a href="/write/" class="mt-6 inline-block rounded-full bg-accent-600 px-5 py-2.5 font-semibold text-white hover:bg-accent-700">Start a story →</a>
+    <section class="mt-10 space-y-4">
+      <h2 class="text-xl font-semibold">Stay in the flow</h2>
+      <p>Select text to reveal formatting. Use the <strong>+</strong> beside the story to insert an image, heading, code block, quote, list, or divider. You can also paste or drop images.</p>
+      <p>Drafts save automatically on this browser. Open <strong>My stories</strong> to return to one. Use <strong>••• → Download draft backup</strong> to keep a copy on another device. Clearing browser storage removes local drafts.</p>
+      <p>Use <strong>Preview</strong> to read your story without editing controls. Your draft remains off the public website until you publish it.</p>
     </section>
-    <section class="mt-10">
-      <h2 class="text-xl font-semibold">From an idea to a published story</h2>
-      <ol class="mt-4 list-decimal space-y-3 pl-5 text-stone-600 dark:text-stone-400">
-        <li>Select <strong>Blog</strong>, <strong>Security Research</strong>, or <strong>Tools &amp; Projects</strong>, then create a new entry.</li>
-        <li>Add your title, summary, and story. Use the toolbar for formatting, links, images, and code blocks.</li>
-        <li>Switch to <strong>Preview</strong> to review your work. Save a draft to return to it later.</li>
-        <li>When ready, use the workflow’s <strong>Publish</strong> action. The site updates after the deployment finishes, usually within a few minutes.</li>
-      </ol>
-      <p class="mt-5 text-sm text-stone-500 dark:text-stone-400">Saved drafts stay off the website, but are stored in your public GitHub repository. They are not private documents.</p>
+    <section class="mt-10 space-y-4">
+      <h2 class="text-xl font-semibold">Publish when you’re ready</h2>
+      <p>Select <strong>Publish</strong>. Choose Blog, Security Research, or Tools &amp; Projects, then add a short summary, category, and optional tags.</p>
+      <p>Connect GitHub with a fine-grained token limited to <strong>cyberpooja.github.io</strong> and <strong>Contents: Read and write</strong>. Create it in <a href="https://github.com/settings/personal-access-tokens/new" class="text-accent-600 underline">GitHub’s token settings</a> and enter it only in the connection dialog.</p>
+      <p>The token stays in memory for this tab and is cleared when you reload or disconnect. Writing and local drafts do not require a token.</p>
+      <p>Select <strong>Publish story</strong> to save it to GitHub. Follow the deployment link to see when the update is live. Images in the story are uploaded when you publish.</p>
+      <p>To update a published story, open <strong>My stories → Published</strong>, connect GitHub, and choose the story. Edits remain local until you publish the update.</p>
     </section>
   </div>
 </Layout>

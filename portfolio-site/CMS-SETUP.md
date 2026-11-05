@@ -1,20 +1,21 @@
-# Writing from the browser
+# Focused writing workspace
 
-Open https://cyberpooja.github.io/write/ or select **Write** in the website header.
+Open `/write/` to write immediately. The custom Tiptap editor provides a title and story canvas, floating selection formatting, inline insert menu, image paste/drop, and preview. Metadata appears only in the publish dialog.
 
-## Sign in
+## Drafts
 
-Choose **Sign In with Token**. Create a GitHub fine-grained token for only `cyberpooja/cyberpooja.github.io`, with **Contents: Read and write** and **Pull requests: Read and write**, then enter it in the editor. Never commit or share the token. Sign out on shared computers. The editor stores your sign-in in this browser; renew it when the token expires.
+Drafts are saved to IndexedDB on the current browser. The editor shows save success/failure and supports multiple stories and JSON backup export/import. Backups restore as a new draft so they cannot overwrite an existing published entry. Local drafts are not sent to GitHub. Clearing browser storage removes them; download backups for portability.
 
-## Write and publish
+## Publishing
 
-1. Select Blog, Security Research, or Tools & Projects and create a new entry.
-2. Enter your title, summary, and story. Use the visual toolbar for headings, bold, lists, quotes, code, links, and images. No Markdown is required.
-3. Use Preview to review your entry. Save it as a draft until ready.
-4. Use the editorial workflow to mark it ready and Publish. Publishing updates the website automatically; allow the Pages build to finish.
+Connect with a fine-grained GitHub token scoped to `cyberpooja/cyberpooja.github.io` and **Contents: read/write**. Tokens are kept in memory only and are not saved with drafts, in localStorage, or in the repository. Reloading the page requires reconnecting to publish, but writing does not require signing in.
 
-Saved drafts are kept on separate GitHub branches until published. They do not appear on the website, but this is a public repository, so saved drafts are not confidential.
+Publishing writes a Markdown file to `portfolio-site/src/content/{blog,research,tools}`. Embedded PNG/JPEG/WebP/GIF images up to 5 MB are uploaded to `portfolio-site/public/uploads` first. If publishing fails, the local draft remains intact; an image already uploaded may remain in the repository. GitHub Pages deploys after the commit. The editor distinguishes a successful commit from a completed deployment.
 
-The `draft` frontmatter value defaults to false because publication is controlled by the editorial workflow. There is no second draft switch to forget.
+Published entries can be reopened from My stories → Published. Existing frontmatter is preserved, and GitHub's file SHA prevents accidentally overwriting a newer remote edit. On conflict, download the local draft before reloading the published version.
 
-The backend is connected directly to the existing repository. OAuth is not configured; token sign-in works without an OAuth server. The editor is pinned to Sveltia CMS 0.260.0 with a verified integrity hash. Content is saved as Markdown and media is stored under `portfolio-site/public/uploads`.
+The previous Sveltia configuration is retained for existing workflow data; it is no longer the `/write/` experience. Existing editorial drafts on GitHub branches are not automatically migrated into local drafts.
+
+## Checks
+
+Run `npm test`, `npm run astro -- check`, and `npm run build`. Tests cover metadata round-trips, published update conflicts, image validation, editor serialization, and IndexedDB persistence without creating repository content.
