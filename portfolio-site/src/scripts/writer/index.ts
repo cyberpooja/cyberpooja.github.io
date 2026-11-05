@@ -87,7 +87,7 @@ document.addEventListener('keydown', event => {
 for (const button of document.querySelectorAll<HTMLElement>('[data-close]')) button.onclick = () => { if (!busy) button.closest('dialog')?.close(); };
 for (const d of document.querySelectorAll('dialog')) d.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
 $('more-button').onclick = () => { $('more-menu').hidden = !$('more-menu').hidden; $('more-button').setAttribute('aria-expanded',String(!$('more-menu').hidden)); };
-$('theme-button').onclick = () => { const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; try { localStorage.setItem('writer-theme',theme); } catch {} };
+$('theme-button').onclick = () => { const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; try { localStorage.setItem('theme',theme); } catch {} };
 $('insert-button').onmousedown = event => event.preventDefault();
 $('insert-button').onclick = () => { if (busy || preview) return; rememberSelection(); $('insert-menu').hidden = !$('insert-menu').hidden; $('insert-button').setAttribute('aria-expanded',String(!$('insert-menu').hidden)); };
 function openLink() { rememberSelection(); $<HTMLInputElement>('link-url').value = editor.getAttributes('link').href ?? ''; dialog('link-dialog').showModal(); }
@@ -200,3 +200,5 @@ async function showStories(remote=false){
   }catch(error){$('stories-note').textContent=errorText(error);}
 }
 $('stories-button').onclick=()=>void showStories();$('local-tab').onclick=()=>void showStories();$('published-tab').onclick=()=>void showStories(true);
+
+window.addEventListener('storage', event => { if (event.key === 'theme' && (event.newValue === 'light' || event.newValue === 'dark')) document.documentElement.dataset.theme = event.newValue; });

@@ -7,7 +7,7 @@ import '../styles/writer.css';
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" /><title>Write · puja.sec</title>
   <link rel="icon" href="/favicon.svg" />
-  <script is:inline>document.documentElement.dataset.theme = localStorage.getItem('writer-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');</script>
+  <script is:inline>let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; try { theme = localStorage.getItem('theme') || theme; } catch {} document.documentElement.dataset.theme = theme;</script>
 </head>
 <body data-pagefind-ignore>
   <header class="writer-header">
