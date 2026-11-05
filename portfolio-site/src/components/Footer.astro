@@ -1,0 +1,33 @@
+---
+import { withBase } from '../utils/paths';
+import { SITE, SOCIAL_LINKS } from '../site.config';
+
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-stone-200 dark:border-stone-800">
+  <div class="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-10 text-center sm:px-6">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="h-5 w-5 text-accent-600 dark:text-accent-400">
+      <path d="M4 4h5M4 4v5M20 4h-5M20 4v5M4 20h5M4 20v-5M20 20h-5M20 20v-5" />
+      <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none" />
+    </svg>
+    <p class="text-sm text-stone-500 dark:text-stone-400">{SITE.tagline}</p>
+
+    <div class="flex flex-wrap items-center justify-center gap-4 text-sm">
+      {SOCIAL_LINKS.map((link) => (
+        <a href={link.href} class="text-stone-600 underline-offset-4 hover:text-accent-600 hover:underline dark:text-stone-300 dark:hover:text-accent-400">
+          {link.label}
+        </a>
+      ))}
+      <a href={withBase('/archive/')} class="text-stone-600 underline-offset-4 hover:text-accent-600 hover:underline dark:text-stone-300 dark:hover:text-accent-400">
+        Archive
+      </a>
+      <a href={withBase('/rss.xml')} class="text-stone-600 underline-offset-4 hover:text-accent-600 hover:underline dark:text-stone-300 dark:hover:text-accent-400">
+        RSS
+      </a>
+    </div>
+
+    <p class="text-xs text-stone-400 dark:text-stone-500">
+      &copy; {year} {SITE.author.name}. All research is published for educational and defensive purposes.
+    </p>
+  </div>
+</footer>

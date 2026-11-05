@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AboutGate from '../components/AboutGate.astro';
+import { SITE } from '../site.config';
+
+// TODO: replace all placeholder content below with your real background, skills, and history.
+const skills = {
+  'Mobile & Reverse Engineering': ['Android (Java/Kotlin/Smali)', 'Frida instrumentation', 'apktool / jadx', 'iOS fundamentals'],
+  'Web & API Security': ['AuthN/authZ testing', 'Burp Suite', 'HTTP protocol-level attacks', 'GraphQL/REST API assessment'],
+  'AI / LLM Security': ['Prompt injection', 'RAG pipeline threat modeling', 'Agentic tool-calling risk review'],
+  'Automation & Tooling': ['Python', 'Go', 'Bash', 'CI/CD-integrated SAST/DAST'],
+};
+
+const timeline = [
+  { year: '2026', title: 'Independent security researcher', detail: 'Publishing original vulnerability research, PoCs, and open-source tooling on this site.' },
+  { year: '2023 – 2026', title: 'Application security engineer', detail: 'Mobile, web, and API security assessments; internal tooling for static analysis at scale.' },
+  { year: '2021 – 2023', title: 'Software engineer → security transition', detail: 'Moved from backend engineering into application security, focusing on authZ and API design flaws.' },
+];
+
+const community = [
+  'Occasional CTF player (web & mobile categories)',
+  'Contributor to open-source security tooling (see Tools & Projects)',
+  'Responsible disclosure reports across several bug bounty programs',
+];
+---
+<Layout title="About" description="Professional background, technical skills, research interests, and community contributions.">
+  <AboutGate />
+
+  <div id="about-content" class="about-gated about-content mx-auto max-w-3xl px-4 py-14 sm:px-6">
+    <header class="mb-10">
+      <img src={SITE.author.avatar} alt={SITE.author.name} class="mb-5 h-20 w-20 rounded-full" />
+      <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-white">About</h1>
+      <p class="mt-4 text-lg text-stone-600 dark:text-stone-400">{SITE.author.bio}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="mb-4 text-lg font-semibold text-stone-900 dark:text-white">Technical skills</h2>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {Object.entries(skills).map(([group, items]) => (
+          <div class="rounded-lg border border-stone-200 p-4 dark:border-stone-800">
+            <h3 class="mb-2 text-sm font-semibold text-stone-900 dark:text-white">{group}</h3>
+            <ul class="space-y-1 text-sm text-stone-600 dark:text-stone-400">
+              {items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="mb-4 text-lg font-semibold text-stone-900 dark:text-white">Background</h2>
+      <ol class="space-y-5 border-l border-stone-200 pl-5 dark:border-stone-800">
+        {timeline.map((item) => (
+          <li>
+            <p class="text-xs font-medium uppercase tracking-wide text-accent-600 dark:text-accent-400">{item.year}</p>
+            <p class="font-medium text-stone-900 dark:text-white">{item.title}</p>
+            <p class="text-sm text-stone-600 dark:text-stone-400">{item.detail}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="mb-4 text-lg font-semibold text-stone-900 dark:text-white">Speaking &amp; writing</h2>
+      <p class="text-sm text-stone-600 dark:text-stone-400">
+        No conference talks yet — this section is a placeholder for meetup/conference talks, podcast appearances,
+        or guest posts as they happen.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="mb-4 text-lg font-semibold text-stone-900 dark:text-white">Community contributions</h2>
+      <ul class="space-y-2 text-sm text-stone-600 dark:text-stone-400">
+        {community.map((item) => (
+          <li class="flex gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400">
+              <path d="m20 6-11 11-5-5" />
+            </svg>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Layout>

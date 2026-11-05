@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPublished, articleHref } from '../utils/content';
+import { formatDate } from '../utils/dates';
+
+const research = await getPublished('research');
+const blog = await getPublished('blog');
+
+const all = [...research.map((e) => ({ e, collection: 'research' as const })), ...blog.map((e) => ({ e, collection: 'blog' as const }))]
+  .sort((a, b) => b.e.data.pubDate.valueOf() - a.e.data.pubDate.valueOf());
+
+const byYear = all.reduce<Record<string, typeof all>>((acc, item) => {
+  const year = item.e.data.pubDate.getFullYear().toString();
+  acc[year] = acc[year] ?? [];
+  acc[year].push(item);
+  return acc;
+}, {});
+
+const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
+---
+<Layout title="Archive" description="Full archive of research and blog publications by date.">
+  <div class="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+    <h1 class="mb-8 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Archive</h1>
+
+    {years.map((year) => (
+      <section class="mb-10">
+        <h2 class="mb-4 text-lg font-semibold text-accent-600 dark:text-accent-400">{year}</h2>
+        <ul class="space-y-3 border-l border-stone-200 pl-5 dark:border-stone-800">
+          {byYear[year].map(({ e, collection }) => (
+            <li class="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3">
+              <time datetime={e.data.pubDate.toISOString()} class="shrink-0 text-xs text-stone-500 dark:text-stone-400">
+                {formatDate(e.data.pubDate)}
+              </time>
+              <a href={articleHref(collection, e.id)} class="font-medium text-stone-900 hover:text-accent-600 dark:text-white dark:hover:text-accent-400">
+                {e.data.title}
+              </a>
+              <span class="text-xs uppercase tracking-wide text-stone-400 dark:text-stone-500">{collection}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Layout>

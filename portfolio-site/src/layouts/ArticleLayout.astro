@@ -1,0 +1,175 @@
+---
+import { withBase } from '../utils/paths';
+import Layout from './Layout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import TagBadge from '../components/TagBadge.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { formatDate } from '../utils/dates';
+
+interface RelatedItem {
+  href: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  category: string;
+}
+
+interface AdjacentItem {
+  href: string;
+  title: string;
+}
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  author: string;
+  category: string;
+  tags: string[];
+  coverImage?: string;
+  coverImageAlt?: string;
+  readingMinutes: number;
+  severity?: string;
+  cve?: string;
+  headings: Heading[];
+  related?: RelatedItem[];
+  prev?: AdjacentItem | null;
+  next?: AdjacentItem | null;
+  sectionLabel: string;
+  sectionHref: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author,
+  category,
+  tags,
+  coverImage,
+  coverImageAlt,
+  readingMinutes,
+  severity,
+  cve,
+  headings,
+  related = [],
+  prev,
+  next,
+  sectionLabel,
+  sectionHref,
+} = Astro.props;
+---
+<Layout title={title} description={description} image={coverImage} type="article" publishedTime={pubDate} modifiedTime={updatedDate}>
+  <div id="reading-progress"></div>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <nav class="mb-6 text-sm text-stone-500 dark:text-stone-400">
+      <a href={withBase(sectionHref)} class="hover:text-accent-600 dark:hover:text-accent-400">{sectionLabel}</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-stone-700 dark:text-stone-300">{title}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_240px]">
+      <article class="min-w-0">
+        <header class="mb-8">
+          <div class="mb-3 flex flex-wrap items-center gap-2 text-xs">
+            <span class="font-medium uppercase tracking-wide text-accent-600 dark:text-accent-400">{category}</span>
+            {cve && (
+              <>
+                <span class="text-stone-300 dark:text-stone-700">&middot;</span>
+                <span class="font-mono text-stone-500 dark:text-stone-400">{cve}</span>
+              </>
+            )}
+            {severity && (
+              <>
+                <span class="text-stone-300 dark:text-stone-700">&middot;</span>
+                <span class="font-medium uppercase text-stone-500 dark:text-stone-400">{severity} severity</span>
+              </>
+            )}
+          </div>
+
+          <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-white">{title}</h1>
+          <p class="mt-3 text-lg text-stone-600 dark:text-stone-400">{description}</p>
+
+          <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
+            <span>By {author}</span>
+            <span class="text-stone-300 dark:text-stone-700">&middot;</span>
+            <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+            {updatedDate && (
+              <>
+                <span class="text-stone-300 dark:text-stone-700">&middot;</span>
+                <span>Updated {formatDate(updatedDate)}</span>
+              </>
+            )}
+            <span class="text-stone-300 dark:text-stone-700">&middot;</span>
+            <span>{readingMinutes} min read</span>
+          </div>
+
+          {tags.length > 0 && (
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <TagBadge label={tag} href={withBase(`/blog/?tag=${encodeURIComponent(tag)}`)} />
+              ))}
+            </div>
+          )}
+        </header>
+
+        {coverImage && (
+          <img src={withBase(coverImage)} alt={coverImageAlt ?? ''} class="mb-8 w-full rounded-lg border border-stone-200 dark:border-stone-800" />
+        )}
+
+        <div class="prose prose-slate max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-pre:bg-transparent prose-pre:p-0 prose-img:rounded-lg prose-a:text-accent-600 dark:prose-a:text-accent-400">
+          <slot />
+        </div>
+
+        {(prev || next) && (
+          <nav class="mt-12 grid grid-cols-1 gap-3 border-t border-stone-200 pt-6 sm:grid-cols-2 dark:border-stone-800">
+            {prev ? (
+              <a href={prev.href} class="rounded-lg border border-stone-200 p-4 transition hover:border-accent-300 dark:border-stone-800 dark:hover:border-accent-700">
+                <span class="text-xs text-stone-500 dark:text-stone-400">&larr; Previous</span>
+                <p class="mt-1 font-medium text-stone-900 dark:text-white">{prev.title}</p>
+              </a>
+            ) : <span />}
+            {next ? (
+              <a href={next.href} class="rounded-lg border border-stone-200 p-4 text-right transition hover:border-accent-300 dark:border-stone-800 dark:hover:border-accent-700">
+                <span class="text-xs text-stone-500 dark:text-stone-400">Next &rarr;</span>
+                <p class="mt-1 font-medium text-stone-900 dark:text-white">{next.title}</p>
+              </a>
+            ) : <span />}
+          </nav>
+        )}
+
+        {related.length > 0 && (
+          <section class="mt-12 border-t border-stone-200 pt-8 dark:border-stone-800">
+            <h2 class="mb-4 text-lg font-semibold text-stone-900 dark:text-white">Related articles</h2>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {related.map((item) => (
+                <ArticleCard
+                  href={item.href}
+                  title={item.title}
+                  description={item.description}
+                  pubDate={item.pubDate}
+                  category={item.category}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+
+      <aside class="hidden lg:block">
+        <div class="sticky top-20">
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
+    </div>
+  </div>
+</Layout>

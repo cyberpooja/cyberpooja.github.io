@@ -15,8 +15,11 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            portfolio-site/package-lock.json
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -29,6 +32,19 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
           NEXT_PUBLIC_GITHUB_REPOSITORY: ${{ github.repository }}
           NEXT_PUBLIC_CMS_URL: ${{ vars.CMS_URL }}
+      - name: Install portfolio dependencies
+        working-directory: portfolio-site
+        run: npm ci
+      - name: Build replacement portfolio
+        working-directory: portfolio-site
+        run: npm run build
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
+      - name: Replace portfolio in Pages artifact
+        run: |
+          rm -rf out/portfolio
+          mkdir -p out/portfolio
+          cp -a portfolio-site/dist/. out/portfolio/
       - uses: actions/upload-pages-artifact@v4
         with:
           path: out

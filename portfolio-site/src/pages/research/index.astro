@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FilterableGrid from '../../components/FilterableGrid.astro';
+import { getPublished, articleHref } from '../../utils/content';
+import { readingTime } from '../../utils/readingTime';
+
+const entries = await getPublished('research');
+
+const items = entries.map((entry) => ({
+  href: articleHref('research', entry.id),
+  title: entry.data.title,
+  description: entry.data.description,
+  pubDate: entry.data.pubDate,
+  category: entry.data.category,
+  tags: entry.data.tags,
+  readingMinutes: readingTime(entry.body ?? ''),
+  severity: entry.data.severity,
+  featured: entry.data.featured,
+}));
+---
+<Layout title="Security Research" description="Vulnerability research, CVE analysis, root cause analysis, and exploit analysis across Android, web, API, product, and AI security.">
+  <div class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <header class="mb-10 max-w-2xl">
+      <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Security Research</h1>
+      <p class="mt-3 text-stone-600 dark:text-stone-400">
+        Vulnerability research, CVE analysis, root cause analysis, exploit analysis, and proof-of-concept write-ups
+        across Android, web, API, product, and AI security.
+      </p>
+    </header>
+
+    <FilterableGrid items={items} idPrefix="research" emptyLabel="No research matches these filters." />
+  </div>
+</Layout>

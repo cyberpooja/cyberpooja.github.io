@@ -1,0 +1,466 @@
+---
+// Gates the real About content behind a mobile-emulator + Frida-terminal
+// puzzle. Progressive enhancement: with JS disabled, #about-gate stays
+// hidden and #about-content stays visible (see the inline bootstrap script
+// below and the .about-gated / .js-ready rules in global.css), so the real
+// page is never actually inaccessible.
+const TARGET_PACKAGE = 'com.pujasec.about';
+const APP_NAME = 'AboutVault';
+---
+<script is:inline>
+  // Every page load/refresh starts locked again — no persisted unlock state.
+  document.documentElement.classList.add('js-ready');
+</script>
+
+<div id="about-gate" class="about-gated mx-auto max-w-5xl px-4 py-10 sm:px-6">
+  <div class="mb-6 text-center">
+    <p class="index-label mb-1 justify-center">Access control</p>
+    <h1 class="text-2xl font-extrabold text-stone-900 dark:text-white">This page is protected.</h1>
+    <p class="mx-auto mt-2 max-w-xl text-sm text-stone-600 dark:text-stone-400">
+      No Frida experience needed — click <strong>Insert command</strong> on each step below, then press <strong>Enter</strong> in the terminal. Do all three, in order, to unlock the About page.
+    </p>
+  </div>
+
+  <!-- Step-by-step guide: not technical knowledge required, just click + Enter -->
+  <div id="mission-steps" class="mx-auto mb-8 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+    <div class="step-card" data-step="spawn" data-status="active">
+      <div class="mb-2 flex items-center gap-2">
+        <span class="step-marker">1</span>
+        <p class="step-title">Spawn the app</p>
+      </div>
+      <p class="step-desc">Attach Frida to the target process.</p>
+      <code class="step-code">frida -U -f {TARGET_PACKAGE} --no-pause</code>
+      <button type="button" class="step-insert-btn" data-cmd={`frida -U -f ${TARGET_PACKAGE} --no-pause`}>
+        Insert command ↴
+      </button>
+    </div>
+    <div class="step-card" data-step="root" data-status="pending">
+      <div class="mb-2 flex items-center gap-2">
+        <span class="step-marker">2</span>
+        <p class="step-title">Bypass root detection</p>
+      </div>
+      <p class="step-desc">Patch the app's root checks.</p>
+      <code class="step-code">frida -U -l bypass-root.js -f {TARGET_PACKAGE}</code>
+      <button type="button" class="step-insert-btn" data-cmd={`frida -U -l bypass-root.js -f ${TARGET_PACKAGE}`}>
+        Insert command ↴
+      </button>
+    </div>
+    <div class="step-card" data-step="ssl" data-status="pending">
+      <div class="mb-2 flex items-center gap-2">
+        <span class="step-marker">3</span>
+        <p class="step-title">Bypass SSL pinning</p>
+      </div>
+      <p class="step-desc">Patch the app's certificate pinning.</p>
+      <code class="step-code">frida -U -l ssl-unpinning.js -f {TARGET_PACKAGE}</code>
+      <button type="button" class="step-insert-btn" data-cmd={`frida -U -l ssl-unpinning.js -f ${TARGET_PACKAGE}`}>
+        Insert command ↴
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-center">
+    <!-- Mobile emulator -->
+    <div class="mx-auto w-[280px] shrink-0 rounded-[2.5rem] border-[10px] border-stone-900 bg-stone-900 shadow-xl dark:border-stone-700">
+      <div class="overflow-hidden rounded-[1.75rem] bg-navy">
+        <div class="flex items-center justify-between px-4 pt-2 text-[10px] font-medium text-white/70">
+          <span>9:41</span>
+          <span class="flex items-center gap-1">
+            <span id="emu-signal">●●●</span>
+            <span>⌁</span>
+            <span>▮</span>
+          </span>
+        </div>
+
+        <div class="px-4 pb-6 pt-4">
+          <div class="mb-4 flex items-center gap-2">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0b1b16" stroke-width="2" class="h-5 w-5">
+                <path d="M12 2 4 6v6c0 5 4 8.5 8 10 4-1.5 8-5 8-10V6l-8-4Z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-white">{APP_NAME}</p>
+              <p class="font-mono text-[10px] text-white/50">{TARGET_PACKAGE}</p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div id="check-root" data-status="fail" class="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span class="text-xs text-white/80">Root Detection</span>
+              <span class="check-badge rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase">DETECTED</span>
+            </div>
+            <div id="check-ssl" data-status="fail" class="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span class="text-xs text-white/80">SSL Pinning</span>
+              <span class="check-badge rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase">ENABLED</span>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-black/20 py-6">
+            <svg id="emu-lock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" class="h-8 w-8 transition">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <p id="emu-status-text" class="font-mono text-xs font-semibold tracking-wide text-red-400">ACCESS DENIED</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div class="w-full max-w-xl overflow-hidden rounded-xl border border-stone-800 bg-navy shadow-xl">
+      <div class="flex items-center gap-1.5 border-b border-white/10 bg-black/20 px-3 py-2">
+        <span class="h-2.5 w-2.5 rounded-full bg-red-500/80"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-accent-500/80"></span>
+        <span class="ml-2 font-mono text-[11px] text-white/50">frida — bypass-console</span>
+        <button type="button" id="gate-hint-btn" class="ml-auto rounded bg-white/10 px-2 py-0.5 font-mono text-[10px] text-white/70 transition hover:bg-white/20">
+          hint
+        </button>
+      </div>
+
+      <div id="terminal-log" class="h-72 overflow-y-auto px-4 py-3 font-mono text-[12.5px] leading-relaxed text-stone-300 sm:h-80">
+        <p class="text-white/50">Frida 16.3.3 — bypass console (simulated). Type a command and press Enter.</p>
+        <p class="text-white/50">Target: <span class="text-accent-400">{TARGET_PACKAGE}</span> · Type <span class="text-accent-400">help</span> for available commands.</p>
+      </div>
+
+      <form id="terminal-form" class="flex items-center gap-2 border-t border-white/10 px-4 py-2.5">
+        <span class="font-mono text-sm text-accent-400">$</span>
+        <input
+          id="terminal-input"
+          type="text"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder={`frida -U -f ${TARGET_PACKAGE} --no-pause`}
+          class="flex-1 bg-transparent font-mono text-[12.5px] text-white placeholder:text-white/30 focus:outline-none"
+        />
+      </form>
+    </div>
+  </div>
+
+  <div class="mt-6 text-center">
+    <button type="button" id="gate-skip-btn" class="font-mono text-xs text-stone-400 underline-offset-4 hover:text-accent-600 hover:underline dark:text-stone-500 dark:hover:text-accent-400">
+      skip the puzzle →
+    </button>
+  </div>
+</div>
+
+<style>
+  #check-root[data-status='fail'] .check-badge,
+  #check-ssl[data-status='fail'] .check-badge {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+  }
+  #check-root[data-status='ok'] .check-badge,
+  #check-ssl[data-status='ok'] .check-badge {
+    background: rgba(62, 198, 140, 0.18);
+    color: #3ec68c;
+  }
+  #check-root[data-status='ok'],
+  #check-ssl[data-status='ok'] {
+    border-color: rgba(62, 198, 140, 0.35) !important;
+  }
+
+  .step-card {
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-stone-200);
+    background: var(--color-stone-50);
+    padding: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  html.dark .step-card {
+    border-color: var(--color-stone-800);
+    background: color-mix(in srgb, var(--color-stone-900) 50%, transparent);
+  }
+  .step-marker {
+    display: inline-flex;
+    height: 1.5rem;
+    width: 1.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--color-stone-200);
+    color: var(--color-stone-600);
+  }
+  html.dark .step-marker {
+    background: var(--color-stone-800);
+    color: var(--color-stone-400);
+  }
+  .step-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-stone-900);
+  }
+  html.dark .step-title {
+    color: white;
+  }
+  .step-desc {
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-stone-500);
+  }
+  .step-code {
+    display: block;
+    border-radius: 0.375rem;
+    background: var(--color-navy);
+    color: var(--color-accent-400);
+    padding: 0.4rem 0.55rem;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+  .step-insert-btn {
+    margin-top: 0.6rem;
+    width: 100%;
+    border-radius: 0.375rem;
+    background: var(--color-stone-200);
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-stone-700);
+    transition: background 0.15s ease;
+  }
+  html.dark .step-insert-btn {
+    background: var(--color-stone-800);
+    color: var(--color-stone-200);
+  }
+  .step-insert-btn:hover {
+    background: var(--color-accent-200);
+    color: var(--color-accent-900);
+  }
+
+  /* Pending steps are dimmed and can't be actioned yet */
+  .step-card[data-status='pending'] {
+    opacity: 0.55;
+  }
+  .step-card[data-status='pending'] .step-insert-btn {
+    pointer-events: none;
+  }
+
+  /* The current step is highlighted so it's obvious what to do next */
+  .step-card[data-status='active'] {
+    border-color: var(--color-accent-500);
+    box-shadow: 0 0 0 1px var(--color-accent-500);
+  }
+
+  /* Completed steps turn green with a checkmark instead of a number */
+  .step-card[data-status='done'] {
+    opacity: 0.85;
+    border-color: var(--color-accent-500);
+    background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
+  }
+  .step-card[data-status='done'] .step-marker {
+    background: var(--color-accent-500);
+    color: #0b1b16;
+  }
+  .step-card[data-status='done'] .step-insert-btn {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>
+
+<script define:vars={{ TARGET_PACKAGE }}>
+  const log = document.getElementById('terminal-log');
+  const form = document.getElementById('terminal-form');
+  const input = document.getElementById('terminal-input');
+  const hintBtn = document.getElementById('gate-hint-btn');
+  const skipBtn = document.getElementById('gate-skip-btn');
+  const checkRoot = document.getElementById('check-root');
+  const checkSsl = document.getElementById('check-ssl');
+  const lockIcon = document.getElementById('emu-lock-icon');
+  const statusText = document.getElementById('emu-status-text');
+
+  const state = { spawned: false, root: false, ssl: false };
+
+  const stepCards = {
+    spawn: document.querySelector('.step-card[data-step="spawn"]'),
+    root: document.querySelector('.step-card[data-step="root"]'),
+    ssl: document.querySelector('.step-card[data-step="ssl"]'),
+  };
+
+  function syncSteps() {
+    const order = [
+      ['spawn', state.spawned],
+      ['root', state.root],
+      ['ssl', state.ssl],
+    ];
+    let nextActiveFound = false;
+    order.forEach(([key, done]) => {
+      const card = stepCards[key];
+      if (!card) return;
+      const marker = card.querySelector('.step-marker');
+      if (done) {
+        card.dataset.status = 'done';
+        marker.textContent = '✓';
+      } else if (key === 'spawn') {
+        card.dataset.status = 'active';
+        marker.textContent = '1';
+      } else if (state.spawned && !nextActiveFound) {
+        card.dataset.status = 'active';
+        nextActiveFound = true;
+      } else {
+        card.dataset.status = 'pending';
+      }
+    });
+  }
+
+  function print(text, cls) {
+    const p = document.createElement('p');
+    if (cls) p.className = cls;
+    p.textContent = text;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function printLines(lines, delay = 160) {
+    lines.forEach((line, i) => {
+      setTimeout(() => print(line.text, line.cls), i * delay);
+    });
+    return lines.length * delay;
+  }
+
+  function markBypassed(el) {
+    el.dataset.status = 'ok';
+    const badge = el.querySelector('.check-badge');
+    badge.textContent = el === checkRoot ? 'BYPASSED' : 'DISABLED';
+  }
+
+  function maybeUnlock() {
+    if (state.root && state.ssl) {
+      setTimeout(() => {
+        lockIcon.setAttribute('stroke', '#3ec68c');
+        lockIcon.innerHTML = '<rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V9a4 4 0 0 1 7.5-2"></path>';
+        statusText.textContent = 'ACCESS GRANTED';
+        statusText.classList.remove('text-red-400');
+        statusText.classList.add('text-[color:#3ec68c]');
+        print('[+] All protections bypassed. Access granted.', 'text-[color:#3ec68c] font-semibold');
+      }, 300);
+
+      setTimeout(() => {
+        document.documentElement.classList.add('about-unlocked', 'about-just-unlocked');
+        document.getElementById('about-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 1400);
+    }
+  }
+
+  function helpOutput() {
+    return [
+      { text: 'Available commands:' },
+      { text: `  frida -U -f ${TARGET_PACKAGE} --no-pause   spawn & attach to the target app` },
+      { text: '  frida -U -l bypass-root.js -f <pkg>        patch root-detection checks' },
+      { text: '  frida -U -l ssl-unpinning.js -f <pkg>      patch SSL pinning checks' },
+      { text: '  clear                                      clear the terminal' },
+      { text: `Target package: ${TARGET_PACKAGE}`, cls: 'text-accent-400' },
+    ];
+  }
+
+  function handleCommand(raw) {
+    const cmd = raw.trim();
+    if (!cmd) return;
+    print(`$ ${cmd}`, 'text-white');
+
+    const lower = cmd.toLowerCase();
+
+    if (/^(help|--help|\?)$/.test(lower)) {
+      printLines(helpOutput());
+      return;
+    }
+    if (/^clear$/.test(lower)) {
+      log.innerHTML = '';
+      return;
+    }
+
+    const looksLikeSpawn = /frida/.test(lower) && (/-f\b/.test(lower) || /spawn/.test(lower));
+    const looksLikeRoot = /root/.test(lower) && (/\.js\b/.test(lower) || /bypass/.test(lower) || /load/.test(lower));
+    const looksLikeSsl = /(ssl|pinning|unpinning|certificate)/.test(lower) && (/\.js\b/.test(lower) || /bypass/.test(lower) || /load/.test(lower));
+
+    if (!looksLikeSpawn && !looksLikeRoot && !looksLikeSsl) {
+      printLines([{ text: `frida: command not recognized: "${cmd}" — type help for options`, cls: 'text-red-400' }]);
+      return;
+    }
+
+    if ((looksLikeRoot || looksLikeSsl) && !state.spawned && !looksLikeSpawn) {
+      printLines([
+        { text: 'Failed to attach: no process named target found', cls: 'text-red-400' },
+        { text: `Try spawning it first: frida -U -f ${TARGET_PACKAGE} --no-pause`, cls: 'text-white/50' },
+      ]);
+      return;
+    }
+
+    let offset = 0;
+
+    if (looksLikeSpawn && !state.spawned) {
+      state.spawned = true;
+      offset = printLines([
+        { text: 'Connected to Pixel 7 (id=emulator-5554)' },
+        { text: `Spawning \`${TARGET_PACKAGE}\`...` },
+        { text: `Spawned \`${TARGET_PACKAGE}\`. Resuming main thread!` },
+        { text: `[Pixel 7::${TARGET_PACKAGE}]-> `, cls: 'text-accent-400' },
+      ]);
+    } else if (looksLikeSpawn) {
+      offset = printLines([{ text: 'Process already spawned and attached.', cls: 'text-white/50' }]);
+    }
+
+    if (looksLikeRoot && !state.root) {
+      setTimeout(() => {
+        printLines([
+          { text: '%load bypass-root.js' },
+          { text: 'Hooking RootBeer.isRooted()...' },
+          { text: "Hooking File.exists() for su/magisk paths..." },
+          { text: '[root-bypass] All known root-detection checks patched.', cls: 'text-[color:#3ec68c]' },
+        ]);
+      }, offset);
+      state.root = true;
+      markBypassed(checkRoot);
+      offset += 4 * 160;
+    } else if (looksLikeRoot) {
+      setTimeout(() => print('Root detection already bypassed.', 'text-white/50'), offset);
+    }
+
+    if (looksLikeSsl && !state.ssl) {
+      setTimeout(() => {
+        printLines([
+          { text: '%load ssl-unpinning.js' },
+          { text: 'Hooking OkHttpClient$Builder.certificatePinner()...' },
+          { text: 'Hooking X509TrustManager.checkServerTrusted()...' },
+          { text: '[ssl-unpinning] Universal SSL pinning bypass installed.', cls: 'text-[color:#3ec68c]' },
+        ]);
+      }, offset);
+      state.ssl = true;
+      markBypassed(checkSsl);
+      offset += 4 * 160;
+    } else if (looksLikeSsl) {
+      setTimeout(() => print('SSL pinning already bypassed.', 'text-white/50'), offset);
+    }
+
+    syncSteps();
+    setTimeout(maybeUnlock, offset + 100);
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const value = input.value;
+    input.value = '';
+    handleCommand(value);
+  });
+
+  hintBtn?.addEventListener('click', () => handleCommand('help'));
+
+  document.querySelectorAll('.step-insert-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cmd = btn.getAttribute('data-cmd') ?? '';
+      input.value = cmd;
+      input.focus();
+      navigator.clipboard?.writeText(cmd).catch(() => {});
+    });
+  });
+
+  skipBtn?.addEventListener('click', () => {
+    document.documentElement.classList.add('about-unlocked', 'about-just-unlocked');
+    document.getElementById('about-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+</script>

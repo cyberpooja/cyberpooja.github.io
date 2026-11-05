@@ -1,0 +1,17 @@
+---
+interface Props {
+  summary: string;
+}
+const { summary } = Astro.props;
+---
+<details class="expandable not-prose my-5 rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-800 dark:bg-stone-900">
+  <summary class="flex items-center justify-between gap-2 font-medium text-stone-900 dark:text-white">
+    <span>{summary}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 shrink-0 transition-transform [details[open]_&]:rotate-180">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </summary>
+  <div class="prose prose-slate mt-3 max-w-none dark:prose-invert">
+    <slot />
+  </div>
+</details>

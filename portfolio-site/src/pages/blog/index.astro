@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FilterableGrid from '../../components/FilterableGrid.astro';
+import { getPublished, articleHref } from '../../utils/content';
+import { readingTime } from '../../utils/readingTime';
+
+const entries = await getPublished('blog');
+
+const items = entries.map((entry) => ({
+  href: articleHref('blog', entry.id),
+  title: entry.data.title,
+  description: entry.data.description,
+  pubDate: entry.data.pubDate,
+  category: entry.data.category,
+  tags: entry.data.tags,
+  readingMinutes: readingTime(entry.body ?? ''),
+  featured: entry.data.featured,
+}));
+---
+<Layout title="Blog" description="Technical tutorials, security concepts, practical labs, and walkthroughs.">
+  <div class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <header class="mb-10 max-w-2xl">
+      <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Blog</h1>
+      <p class="mt-3 text-stone-600 dark:text-stone-400">
+        Technical tutorials, security concepts, practical labs, and walkthroughs — searchable and filterable by
+        category and tag.
+      </p>
+    </header>
+
+    <FilterableGrid items={items} idPrefix="blog" emptyLabel="No posts match these filters." />
+  </div>
+</Layout>

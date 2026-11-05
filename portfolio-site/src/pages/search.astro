@@ -1,0 +1,26 @@
+---
+import { withBase } from '../utils/paths';
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Search" description="Search research, blog posts, and tools.">
+  <div class="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+    <h1 class="mb-6 text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Search</h1>
+    <div id="pagefind-search"></div>
+    <p id="search-unavailable" class="hidden text-sm text-stone-500 dark:text-stone-400">
+      Search index not found. Run <code>npm run build</code> to generate it (search only works against a built
+      site, not the dev server).
+    </p>
+  </div>
+
+  <link rel="stylesheet" href={withBase('/pagefind/pagefind-ui.css')} />
+  <script src={withBase('/pagefind/pagefind-ui.js')} is:inline></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof PagefindUI === 'undefined') {
+        document.getElementById('search-unavailable')?.classList.remove('hidden');
+        return;
+      }
+      new PagefindUI({ element: '#pagefind-search', showSubResults: true, showImages: false });
+    });
+  </script>
+</Layout>

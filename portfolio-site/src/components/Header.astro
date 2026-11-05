@@ -1,0 +1,90 @@
+---
+import { withBase } from '../utils/paths';
+import { SITE, NAV_LINKS } from '../site.config';
+import ThemeToggle from './ThemeToggle.astro';
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  if (href === withBase('/')) return currentPath === href;
+  return currentPath.startsWith(href);
+}
+---
+<header class="sticky top-0 z-50 border-b border-stone-200/80 bg-stone-50/90 backdrop-blur dark:border-stone-800/80 dark:bg-stone-950/90">
+  <div class="h-[3px] bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600"></div>
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
+    <a href={withBase('/')} class="group flex items-center gap-2 text-lg font-extrabold tracking-tight text-stone-900 dark:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="h-6 w-6 text-accent-600 transition group-hover:rotate-90 dark:text-accent-400">
+        <path d="M4 4h5M4 4v5M20 4h-5M20 4v5M4 20h5M4 20v-5M20 20h-5M20 20v-5" />
+        <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none" />
+      </svg>
+      {SITE.title}
+    </a>
+
+    <nav class="hidden items-center gap-5 text-sm md:flex">
+      {NAV_LINKS.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'rounded-md transition',
+            isActive(link.href)
+              ? 'font-semibold text-accent-700 dark:text-accent-400'
+              : 'text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <a
+        href={withBase('/search/')}
+        aria-label="Search"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+      </a>
+      <ThemeToggle />
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white md:hidden"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="hidden border-t border-stone-200 px-4 py-2 dark:border-stone-800 md:hidden">
+    {NAV_LINKS.map((link) => (
+      <a
+        href={link.href}
+        class:list={[
+          'block rounded-md px-3 py-2 text-sm transition',
+          isActive(link.href)
+            ? 'font-medium text-accent-700 dark:text-accent-400'
+            : 'text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800',
+        ]}
+      >
+        {link.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const isOpen = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+</script>

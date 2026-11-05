@@ -73,3 +73,10 @@ App icons open keyboard-accessible native dialog windows. Back restores the prev
 The security widget reads the completed challenge session. Direct visitors see “Not run” rather than a fabricated bypass. Toolkit entries describe an illustrative research workflow; career dates and confirmed speaking appearances remain unprovided. No employment, awards, or conference credits were invented.
 
 The generated mountain wallpaper is a 98 KB WebP asset. CSS provides bezels, reflections, shadows and pointer tilt (maximum 1 degree), with no WebGL dependency. Tilt uses requestAnimationFrame, is disabled on touch and for reduced motion, and pauses while an app window is open. The Fun Stuff window offers two local wallpaper moods. The dock uses internal navigation until personal profile URLs are configured.
+
+## Portfolio at /portfolio/
+
+The Astro site in `portfolio-site/` is published at https://cyberpooja.github.io/portfolio/.
+The Pages workflow builds the existing root site and replaces only `out/portfolio/` with the Astro build.
+Add research, blog posts, and tools to `portfolio-site/src/content/{research,blog,tools}/`; pushing to `main` republishes the site.
+The previous portfolio implementation remains in Git history.
