@@ -14,8 +14,14 @@ npm ci
 npm run dev -- --background
 ```
 
-## Adding content
+## Writing and publishing
 
-Add Markdown or MDX files to `portfolio-site/src/content/research/`, `portfolio-site/src/content/blog/`, or `portfolio-site/src/content/tools/`. These collections start empty. Set `draft: false` when ready to publish.
+Select **Write** on the website or open https://cyberpooja.github.io/write/.
+The visual editor supports blog posts, research articles, and tools/projects with rich text, images, preview, saved drafts, and publishing.
 
-Run `npm run build` inside `portfolio-site/` to check the production build and regenerate search.
+For first-time sign-in, follow https://cyberpooja.github.io/writing-help/.
+Use a fine-grained GitHub token scoped to this repository with Contents and Pull requests read/write access. Enter it only in the editor, never in repository files.
+
+Drafts are saved on workflow branches and are not deployed until published. This repository is public, so saved drafts are not confidential. Publishing merges the entry to main and triggers Pages automatically.
+
+For the technical configuration, see `portfolio-site/CMS-SETUP.md`.

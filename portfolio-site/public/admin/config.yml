@@ -1,119 +1,275 @@
-# Sveltia CMS configuration.
-#
-# NOT YET WIRED TO GITHUB — see ../../CMS-SETUP.md before this can authenticate
-# or publish anything. The fields/collections below are fully configured and
-# will work as soon as the backend block is filled in.
-#
-# For local testing before any of that is set up: open /admin/ and click
-# "Work with Local Repository" on the Sveltia CMS login screen (uses the
-# File System Access API in Chromium browsers — no proxy server needed).
-# `local_backend: true` is a Decap-only option and does nothing here.
-
+# Browser-based writing workspace. Authentication happens only in the editor.
 backend:
   name: github
-  # TODO: set to "your-username/your-repo" once the GitHub repo exists.
   repo: cyberpooja/cyberpooja.github.io
   branch: main
-  # TODO: set to the URL of your deployed OAuth worker (see ../../CMS-SETUP.md).
-  base_url: https://your-oauth-worker.example.workers.dev
-
-media_folder: "portfolio-site/public/uploads"
-public_folder: "/uploads"
-
+  auth_methods:
+  - token
+  skip_ci: false
+media_folder: portfolio-site/public/uploads
+public_folder: /uploads
 collections:
-  - name: research
-    label: "Security Research"
-    folder: "portfolio-site/src/content/research"
-    create: true
-    slug: "{{slug}}"
-    extension: "mdx"
-    format: "frontmatter"
+- name: research
+  label: Security Research
+  folder: portfolio-site/src/content/research
+  create: true
+  slug: '{{slug}}'
+  extension: md
+  format: frontmatter
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Description
+    name: description
+    widget: text
+    hint: A short summary shown on the website.
+  - label: Your story
+    name: body
+    widget: markdown
+    modes:
+    - rich_text
+  - label: Cover Image
+    name: coverImage
+    widget: image
+    required: false
+  - label: Cover Image Alt Text
+    name: coverImageAlt
+    widget: string
+    required: false
+  - label: Publish Date
+    name: pubDate
+    widget: datetime
+  - label: Updated Date
+    name: updatedDate
+    widget: datetime
+    required: false
+  - label: Author
+    name: author
+    widget: hidden
+    default: Pooja
+  - label: Category
+    name: category
+    widget: select
+    options:
+    - Android Security
+    - Web Security
+    - API Security
+    - Product Security
+    - AI Security
+    - Reverse Engineering
+    default: Android Security
+  - label: Tags
+    name: tags
+    widget: list
+    default: []
+  - label: CVE ID
+    name: cve
+    widget: string
+    required: false
+  - label: Severity
+    name: severity
+    widget: select
+    required: false
+    options:
+    - critical
+    - high
+    - medium
+    - low
+    - informational
+  - label: Affected Systems
+    name: affectedSystems
+    widget: list
+    default: []
+  - label: Draft
+    name: draft
+    widget: hidden
+    default: false
+  - label: Featured
+    name: featured
+    widget: boolean
+    default: false
+  - label: SEO Description
+    name: seoDescription
+    widget: text
+    required: false
+  preview_path: research/{{slug}}
+  label_singular: Research article
+  description: Write, format, preview, and publish from this workspace. Save drafts
+    until you are ready to publish.
+- name: blog
+  label: Blog
+  folder: portfolio-site/src/content/blog
+  create: true
+  slug: '{{slug}}'
+  extension: md
+  format: frontmatter
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Description
+    name: description
+    widget: text
+    hint: A short summary shown on the website.
+  - label: Your story
+    name: body
+    widget: markdown
+    modes:
+    - rich_text
+  - label: Cover Image
+    name: coverImage
+    widget: image
+    required: false
+  - label: Cover Image Alt Text
+    name: coverImageAlt
+    widget: string
+    required: false
+  - label: Publish Date
+    name: pubDate
+    widget: datetime
+  - label: Updated Date
+    name: updatedDate
+    widget: datetime
+    required: false
+  - label: Author
+    name: author
+    widget: hidden
+    default: Pooja
+  - label: Category
+    name: category
+    widget: select
+    options:
+    - Web Security
+    - Tutorials
+    - Security Concepts
+    - Walkthroughs
+    - AI Security
+    - Mobile Security
+    default: Web Security
+  - label: Tags
+    name: tags
+    widget: list
+    default: []
+  - label: Draft
+    name: draft
+    widget: hidden
+    default: false
+  - label: Featured
+    name: featured
+    widget: boolean
+    default: false
+  - label: SEO Description
+    name: seoDescription
+    widget: text
+    required: false
+  preview_path: blog/{{slug}}
+  label_singular: Blog post
+  description: Write, format, preview, and publish from this workspace. Save drafts
+    until you are ready to publish.
+- name: tools
+  label: Tools & Projects
+  folder: portfolio-site/src/content/tools
+  create: true
+  slug: '{{slug}}'
+  extension: md
+  format: frontmatter
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Description
+    name: description
+    widget: text
+    hint: A short summary shown on the website.
+  - label: About this tool or project
+    name: body
+    widget: markdown
+    modes:
+    - rich_text
+  - label: Cover Image
+    name: coverImage
+    widget: image
+    required: false
+  - label: Cover Image Alt Text
+    name: coverImageAlt
+    widget: string
+    required: false
+  - label: Publish Date
+    name: pubDate
+    widget: datetime
+  - label: Updated Date
+    name: updatedDate
+    widget: datetime
+    required: false
+  - label: Category
+    name: category
+    widget: select
+    options:
+    - Android Security
+    - Web Security
+    - API Security
+    - Security Automation
+    - Reverse Engineering
+    default: Android Security
+  - label: Tags
+    name: tags
+    widget: list
+    default: []
+  - label: Repository URL
+    name: repoUrl
+    widget: string
+    required: false
+  - label: Download URL
+    name: downloadUrl
+    widget: string
+    required: false
+  - label: Docs URL
+    name: docsUrl
+    widget: string
+    required: false
+  - label: Status
+    name: status
+    widget: select
+    default: active
+    options:
+    - active
+    - maintenance
+    - archived
+  - label: Key Features
+    name: features
+    widget: list
+    default: []
+  - label: Screenshots
+    name: screenshots
+    widget: list
+    default: []
     fields:
-      - { label: "Title", name: title, widget: string }
-      - { label: "Description", name: description, widget: text }
-      - { label: "Publish Date", name: pubDate, widget: datetime }
-      - { label: "Updated Date", name: updatedDate, widget: datetime, required: false }
-      - { label: "Author", name: author, widget: string, default: "Pooja" }
-      - label: "Category"
-        name: category
-        widget: select
-        options: ["Android Security", "Web Security", "API Security", "Product Security", "AI Security", "Reverse Engineering"]
-      - { label: "Tags", name: tags, widget: list, default: [] }
-      - { label: "Cover Image", name: coverImage, widget: image, required: false }
-      - { label: "Cover Image Alt Text", name: coverImageAlt, widget: string, required: false }
-      - { label: "CVE ID", name: cve, widget: string, required: false }
-      - label: "Severity"
-        name: severity
-        widget: select
-        required: false
-        options: ["critical", "high", "medium", "low", "informational"]
-      - { label: "Affected Systems", name: affectedSystems, widget: list, default: [] }
-      - { label: "Draft", name: draft, widget: boolean, default: true }
-      - { label: "Featured", name: featured, widget: boolean, default: false }
-      - { label: "SEO Description", name: seoDescription, widget: text, required: false }
-      - { label: "Body", name: body, widget: markdown }
-
-  - name: blog
-    label: "Blog"
-    folder: "portfolio-site/src/content/blog"
-    create: true
-    slug: "{{slug}}"
-    extension: "mdx"
-    format: "frontmatter"
-    fields:
-      - { label: "Title", name: title, widget: string }
-      - { label: "Description", name: description, widget: text }
-      - { label: "Publish Date", name: pubDate, widget: datetime }
-      - { label: "Updated Date", name: updatedDate, widget: datetime, required: false }
-      - { label: "Author", name: author, widget: string, default: "Pooja" }
-      - label: "Category"
-        name: category
-        widget: select
-        options: ["Web Security", "Tutorials", "Security Concepts", "Walkthroughs", "AI Security", "Mobile Security"]
-      - { label: "Tags", name: tags, widget: list, default: [] }
-      - { label: "Cover Image", name: coverImage, widget: image, required: false }
-      - { label: "Cover Image Alt Text", name: coverImageAlt, widget: string, required: false }
-      - { label: "Draft", name: draft, widget: boolean, default: true }
-      - { label: "Featured", name: featured, widget: boolean, default: false }
-      - { label: "SEO Description", name: seoDescription, widget: text, required: false }
-      - { label: "Body", name: body, widget: markdown }
-
-  - name: tools
-    label: "Tools & Projects"
-    folder: "portfolio-site/src/content/tools"
-    create: true
-    slug: "{{slug}}"
-    extension: "mdx"
-    format: "frontmatter"
-    fields:
-      - { label: "Title", name: title, widget: string }
-      - { label: "Description", name: description, widget: text }
-      - { label: "Publish Date", name: pubDate, widget: datetime }
-      - { label: "Updated Date", name: updatedDate, widget: datetime, required: false }
-      - label: "Category"
-        name: category
-        widget: select
-        options: ["Android Security", "Web Security", "API Security", "Security Automation", "Reverse Engineering"]
-      - { label: "Tags", name: tags, widget: list, default: [] }
-      - { label: "Cover Image", name: coverImage, widget: image, required: false }
-      - { label: "Cover Image Alt Text", name: coverImageAlt, widget: string, required: false }
-      - { label: "Repository URL", name: repoUrl, widget: string, required: false }
-      - { label: "Download URL", name: downloadUrl, widget: string, required: false }
-      - { label: "Docs URL", name: docsUrl, widget: string, required: false }
-      - label: "Status"
-        name: status
-        widget: select
-        default: active
-        options: ["active", "maintenance", "archived"]
-      - { label: "Key Features", name: features, widget: list, default: [] }
-      - label: "Screenshots"
-        name: screenshots
-        widget: list
-        default: []
-        fields:
-          - { label: "Image", name: src, widget: image }
-          - { label: "Alt Text", name: alt, widget: string }
-      - { label: "Draft", name: draft, widget: boolean, default: true }
-      - { label: "Featured", name: featured, widget: boolean, default: false }
-      - { label: "SEO Description", name: seoDescription, widget: text, required: false }
-      - { label: "Body", name: body, widget: markdown }
+    - label: Image
+      name: src
+      widget: image
+    - label: Alt Text
+      name: alt
+      widget: string
+  - label: Draft
+    name: draft
+    widget: hidden
+    default: false
+  - label: Featured
+    name: featured
+    widget: boolean
+    default: false
+  - label: SEO Description
+    name: seoDescription
+    widget: text
+    required: false
+  preview_path: tools/{{slug}}
+  label_singular: Tool or project
+  description: Write, format, preview, and publish from this workspace. Save drafts
+    until you are ready to publish.
+site_url: https://cyberpooja.github.io
+display_url: https://cyberpooja.github.io
+publish_mode: editorial_workflow
+editor:
+  preview: true
+  second_pane: false

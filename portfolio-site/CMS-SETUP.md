@@ -1,40 +1,20 @@
-# Publishing workflow setup (do this when you're ready to host)
+# Writing from the browser
 
-This site's writing/publishing experience is powered by **Sveltia CMS**
-(`public/admin/index.html` + `public/admin/config.yml`), a browser-based editor that commits
-directly to this GitHub repo — no local Markdown editing or `git` commands
-needed once this is wired up.
+Open https://cyberpooja.github.io/write/ or select **Write** in the website header.
 
-It isn't wired up yet. Three things need to happen first, all one-time setup:
+## Sign in
 
-1. **Push this repo to GitHub** under your personal account, as a new project
-   repo (not `username.github.io`, since that name is already taken by
-   another project of yours).
-2. **Create a GitHub OAuth App** (Settings → Developer settings → OAuth Apps)
-   pointing its callback URL at your OAuth worker (step 3).
-3. **Deploy a small OAuth broker.** GitHub OAuth requires a client secret,
-   which can never live in frontend code — so Sveltia (like every Git-based
-   CMS) needs a tiny backend to do the token exchange. The standard,
-   free option is a ~10-line Cloudflare Worker. I can write and walk you
-   through deploying this worker when you're ready for the hosting phase.
+Choose **Sign In with Token**. Create a GitHub fine-grained token for only `cyberpooja/cyberpooja.github.io`, with **Contents: Read and write** and **Pull requests: Read and write**, then enter it in the editor. Never commit or share the token. Sign out on shared computers. The editor stores your sign-in in this browser; renew it when the token expires.
 
-Once those three exist, update `public/admin/config.yml`:
-- `backend.repo` → `your-username/your-repo`
-- `backend.base_url` → your deployed worker's URL
+## Write and publish
 
-Until then, you can still preview the editor UI locally without any GitHub
-auth at all — Sveltia CMS has its own built-in local mode, no proxy server
-needed:
+1. Select Blog, Security Research, or Tools & Projects and create a new entry.
+2. Enter your title, summary, and story. Use the visual toolbar for headings, bold, lists, quotes, code, links, and images. No Markdown is required.
+3. Use Preview to review your entry. Save it as a draft until ready.
+4. Use the editorial workflow to mark it ready and Publish. Publishing updates the website automatically; allow the Pages build to finish.
 
-```bash
-npm run dev
-# visit /admin/, click "Work with Local Repository" on the login screen,
-# and select this project's folder when your browser prompts you.
-# Writes go straight to your local working copy on disk, not GitHub.
-```
+Saved drafts are kept on separate GitHub branches until published. They do not appear on the website, but this is a public repository, so saved drafts are not confidential.
 
-(This uses the File System Access API, so it needs a Chromium-based browser —
-Chrome, Edge, Brave, etc. — not Firefox or Safari.)
+The `draft` frontmatter value defaults to false because publication is controlled by the editorial workflow. There is no second draft switch to forget.
 
-This local mode is enough to try out the writing experience (WYSIWYG editing,
-image paste/drop, drafts) before any hosting decisions are finalized.
+The backend is connected directly to the existing repository. OAuth is not configured; token sign-in works without an OAuth server. The editor is pinned to Sveltia CMS 0.260.0 with a verified integrity hash. Content is saved as Markdown and media is stored under `portfolio-site/public/uploads`.

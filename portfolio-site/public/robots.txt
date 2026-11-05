@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /write/
+Disallow: /writing-help/
 
 Sitemap: https://cyberpooja.github.io/sitemap-index.xml
